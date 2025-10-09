@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Track AKADEMIK GUBKIN's sanctioned voyage from Russia to Cuba - Theia Maritime Intelligence">
+    <title>AKADEMIK GUBKIN: Tracking Sanctioned Oil | Theia Maritime Intelligence</title>
+    
+    <!-- Mapbox GL JS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    
+    <!-- Scrollama -->
+    <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+    
+    <!-- Manrope Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="story-progress">
+        <div class="progress-container">
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label">
+                <span id="progressText">CHAPTER 1 OF 6</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Time Display -->
+    <div class="datetime-display">
+        <div class="date" id="currentDate">AUG 30, 2025</div>
+        <div class="time" id="currentTime">08:00 UTC</div>
+        <div class="elapsed" id="elapsedTime">DAY 1</div>
+    </div>
+
+    <!-- Mini World Map -->
+    <div class="mini-map-container">
+        <div id="miniMap"></div>
+        <div class="map-label">GLOBAL POSITION</div>
+    </div>
+
+    <!-- Vessel Info Panel -->
+    <div class="vessel-info-panel" id="vesselInfoPanel">
+        <div class="info-item">
+            <span class="info-label" id="infoLabel1">VESSEL / IMO</span>
+            <span class="info-value" id="vesselName">AKADEMIK GUBKIN</span>
+            <span class="info-value-small" id="vesselIMO">9842190</span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <span class="info-label" id="infoLabel2">VOYAGE PERIOD</span>
+            <span class="info-value" id="infoValue2">AUG 30 - OCT 2</span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <span class="info-label" id="infoLabel3">CARGO</span>
+            <span class="info-value" id="infoValue3">RUSSIAN CRUDE</span>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+    
+    <!-- Scrolly Container -->
+    <div id="scrolly">
+        <div id="story">
+            
+            <!-- Introduction (Chapter 0) -->
+            <div class="step" data-step="0">
+                <div class="card intro-card">
+                    <div class="intro-logo">
+                        <img src="synmaxlogo.svg" alt="SynMax Theia Intelligence" class="intro-logo-img" />
+                    </div>
+                    <h1>SHADOW VOYAGE</h1>
+                    <h2>A Sanctioned Tanker's Journey to Cuba</h2>
+                    <div class="divider"></div>
+                    <p>Following AKADEMIK GUBKIN's 4,500-nautical-mile voyage carrying Russian crude through monitored waters to the Caribbean—34 days from Baltic loading to Cuban transfer</p>
+                    <div class="scroll-indicator">
+                        <span>SCROLL TO EXPLORE</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20">
+                            <path d="M10 13L6 9h8l-4 4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter 1: Anchorage -->
+            <div class="step" data-step="1">
+                <div class="card align-right">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 1</span>
+                        <span class="location">BALTIC ANCHORAGE</span>
+                    </div>
+                    <h3>146 Days at Anchor</h3>
+                    <p>AKADEMIK GUBKIN sat idle at anchorage from <strong>April 5 through August 29</strong>. The prolonged wait followed its second Cuba delivery of 2025—a pattern suggesting difficulties securing buyers or coordinating payment under sanctions.</p>
+                    <div class="data-point">
+                        <span class="label">IDLE DURATION</span>
+                        <span class="value">146 days</span>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <span class="time">Apr 5</span>
+                            <span class="event">Anchorage begins</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="time">Aug 29</span>
+                            <span class="event">Moves to terminal</span>
+                        </div>
+                    </div>
+                    <div class="sanctions-notice">
+                        <span class="sanction-icon">⚠️</span>
+                        <span>Sanctioned: US, UK, EU, Switzerland</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter 2: Ust-Luga Terminal Loading -->
+            <div class="step" data-step="2">
+                <div class="card align-left">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 2</span>
+                        <span class="location">UST-LUGA TERMINAL, RUSSIA</span>
+                    </div>
+                    <h3>Loading Russian Crude</h3>
+                    <p>On <strong>August 30</strong>, the vessel moved to Russia's primary Baltic export terminal to load a full cargo. AIS-reported draft measurements and positioning data confirm loading operations, despite cloud cover preventing optical satellite confirmation.</p>
+                    <div class="vessel-status">
+                        <div class="status-row">
+                            <span>VESSEL TYPE</span>
+                            <span>Aframax Tanker</span>
+                        </div>
+                        <div class="status-row">
+                            <span>BUILT</span>
+                            <span>2003</span>
+                        </div>
+                        <div class="status-row">
+                            <span>FLAG</span>
+                            <span>Russia</span>
+                        </div>
+                    </div>
+                    <div class="sar-badge">ROSNEFTEFLOT OPERATED</div>
+                </div>
+            </div>
+
+            <!-- Chapter 3: Baltic Transit -->
+            <div class="step" data-step="3">
+                <div class="card align-center">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 3</span>
+                        <span class="location">BALTIC SEA</span>
+                    </div>
+                    <h3>Through Monitored Waters</h3>
+                    <p>The loaded tanker departed <strong>September 2</strong>, threading through the Gulf of Finland and Danish waters. Satellite imagery captured the vessel transiting some of Europe's most heavily monitored maritime corridors.</p>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <span class="time">Sep 2</span>
+                            <span class="event">Gulf of Finland</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="time">Sep 4</span>
+                            <span class="event">Danish waters</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="time">Sep 6</span>
+                            <span class="event">Enters North Sea</span>
+                        </div>
+                    </div>
+                    <div class="sar-badge">SATELLITE CONFIRMED</div>
+                </div>
+            </div>
+
+            <!-- Chapter 4: The Drift -->
+            <div class="step" data-step="4">
+                <div class="card align-right">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 4</span>
+                        <span class="location">NORTH SEA</span>
+                    </div>
+                    <h3>27-Hour Drift</h3>
+                    <p>At <strong>11:15 UTC on September 7</strong>, speed dropped dramatically to 0.5-1 knot. For the next 27 hours, AKADEMIK GUBKIN drifted with currents—likely awaiting final instructions before entering the Atlantic.</p>
+                    <div class="vessel-status">
+                        <div class="status-row">
+                            <span>DRIFT START</span>
+                            <span>Sep 7, 11:15 UTC</span>
+                        </div>
+                        <div class="status-row">
+                            <span>DRIFT END</span>
+                            <span>Sep 8, 14:30 UTC</span>
+                        </div>
+                        <div class="status-row">
+                            <span>DURATION</span>
+                            <span>27 hours</span>
+                        </div>
+                    </div>
+                    <div class="alert-badge">LOITERING DETECTED</div>
+                </div>
+            </div>
+
+            <!-- Chapter 5: Atlantic Crossing -->
+            <div class="step" data-step="5">
+                <div class="card align-right">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 5</span>
+                        <span class="location">NORTH ATLANTIC</span>
+                    </div>
+                    <h3>16-Day Ocean Crossing</h3>
+                    <p>From <strong>September 9-25</strong>, the tanker crossed 4,500 nautical miles of open ocean. The vessel maintained consistent speeds, navigating from Northern European waters to the Caribbean—a route traveled by few vessels under such comprehensive sanctions.</p>
+                    <div class="vessel-status">
+                        <div class="status-row">
+                            <span>DISTANCE</span>
+                            <span>4,500 nm</span>
+                        </div>
+                        <div class="status-row">
+                            <span>DURATION</span>
+                            <span>16 days</span>
+                        </div>
+                        <div class="status-row">
+                            <span>AVG SPEED</span>
+                            <span>11.7 knots</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chapter 6: Cuba Transfer -->
+            <div class="step" data-step="6">
+                <div class="card align-center">
+                    <div class="card-header">
+                        <span class="chapter">CHAPTER 6</span>
+                        <span class="location">EL RAMON, CUBA</span>
+                    </div>
+                    <h3>Ship-to-Ship Transfer</h3>
+                    <p>Anchoring <strong>September 26</strong> at El Ramon—a known STS transfer location—AKADEMIK GUBKIN met the Cuban-flagged LOURDES on <strong>October 2</strong>. Satellite imagery confirms the transfer of crude destined for Cuban refineries.</p>
+                    <div class="vessel-status">
+                        <div class="status-row">
+                            <span>RECEIVER</span>
+                            <span>LOURDES (9259692)</span>
+                        </div>
+                        <div class="status-row">
+                            <span>OPERATION</span>
+                            <span>STS Transfer</span>
+                        </div>
+                        <div class="status-row">
+                            <span>DATE</span>
+                            <span>Oct 2, 2025</span>
+                        </div>
+                    </div>
+                    <div class="sanctions-notice">
+                        <span class="sanction-icon">⚠️</span>
+                        <span>LOURDES Sanctioned: May 8, 2025</span>
+                    </div>
+                    <div class="live-badge pulse">STS OPERATION CONFIRMED</div>
+                </div>
+            </div>
+
+            <!-- Chapter 7: Key Findings -->
+            <div class="step" data-step="7">
+                <div class="card conclusion-card">
+                    <div class="card-header">
+                        <span class="chapter">KEY FINDINGS</span>
+                    </div>
+                    <h3>Analysis Summary</h3>
+                    <ul class="findings">
+                        <li>Third successful Russian crude delivery to Cuba in 2025</li>
+                        <li>Complete tracking from Baltic loading through Caribbean transfer</li>
+                        <li>4,500-nautical-mile voyage completed in 34 days</li>
+                        <li>Both vessels (AKADEMIK GUBKIN and LOURDES) under US sanctions</li>
+                        <li>Demonstrates persistence of sanctioned supply chains despite multilateral enforcement</li>
+                    </ul>
+                    <div class="data-point">
+                        <span class="label">VOYAGE PERIOD</span>
+                        <span class="value">Aug 30 - Oct 2</span>
+                    </div>
+                    <div class="cta">
+                        <p>Monitor sanctioned vessel movements with</p>
+                        <strong>THEIA MARITIME INTELLIGENCE</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Post-Scrolly Section: Button & Credits -->
+    <section class="post-map-section">
+        <!-- CTA Button -->
+        <div class="button-wrapper">
+            <a href="https://www.synmax.com/theia/" 
+               class="maritime-cta-button" 
+               id="maritime-platform-btn"
+               target="_blank"
+               rel="noopener noreferrer">
+                <span class="maritime-cta-text">Explore SynMax Theia</span>
+                <span class="maritime-cta-icon" aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <!-- Credits -->
+        <div class="credits-wrapper">
+            <p class="credits-title">Maritime Intelligence Redefined</p>
+            <p class="credits-byline">Written & Visualized by Vivek Patil & Annalisa Branchini</p>
+            <p class="credits-byline">Edited by Charles Cormack & Kris Martin </p>
+            <p class="credits-byline">Analysis by Theia Intelligence Team</p>
+            <p class="credits-footer">Platform: SynMax Theia, 2025</p>
+        </div>
+    </section>
+
+    <!-- Legend Bar (hidden by default, shown on chapters 1-6) -->
+    <div class="legend-bar" style="display: none;">
+        <div class="legend-item">
+            <span class="legend-dot ais"></span>
+            <span>AKADEMIK GUBKIN AIS Track</span>
+        </div>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+        <img src="LOGO-synmax.png" alt="SynMax Theia Intelligence" class="company-logo" />
+    </div>
+
+    <!-- Animation Scripts (load conditionally if available) -->
+    <script>
+        // Helper to load scripts only if they exist
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => resolve();
+                script.onerror = () => {
+                    console.warn(`Optional script ${src} not found, continuing...`);
+                    resolve(); // Resolve anyway to continue
+                };
+                document.body.appendChild(script);
+            });
+        }
+
+        // Load animation scripts
+        Promise.all([
+            loadScript('animatechapter1.js'),
+            loadScript('animatechapter2.js'),
+            loadScript('animatechapter3.js'),
+            loadScript('animatechapter4.js'),
+            loadScript('animatechapter5.js'),
+            loadScript('animatechapter6.js'),
+            loadScript('animatechapter7.js')
+        ]).then(() => {
+            // Load main map script after animations
+            return loadScript('map.js');
+        }).then(() => {
+            // Load button interactions last
+            return loadScript('button.js');
+        });
+    </script>
+</body>
+</html>
