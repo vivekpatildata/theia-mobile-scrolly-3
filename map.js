@@ -1,6 +1,6 @@
 // ============================================================================
 // THEIA MARITIME INTELLIGENCE - AKADEMIK GUBKIN TRACKER
-// Professional Scrollytelling Experience v3.0
+// Professional Scrollytelling Experience v4.1 - FIXED
 // ============================================================================
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoidml2ZWtwYXRpbDE3IiwiYSI6ImNseHV4bzJoMzFycXgybG9tN3ptZXd1d2QifQ.wbdQPBUeYDHlbwnmgHHI9g';
@@ -13,6 +13,7 @@ const STATE = {
     miniMap: null,
     vesselMarker: null,
     vessel2Marker: null,
+    vessel3Marker: null,
     miniMarker: null,
     scroller: null,
     currentChapter: -1,
@@ -24,26 +25,29 @@ const STATE = {
     layersReady: false,
     chapterData: {},
     vessel2Data: null,
+    chapter7AkademikData: null,
+    chapter7EqualityData: null,
     loadedLayers: new Set(),
     activeAnimations: new Map()
 };
 
 // ============================================================================
-// TIMELINE DATA - Matches voyage progression
+// TIMELINE DATA
 // ============================================================================
 const TIMELINE_DATA = [
     { date: "AUG 30, 2025", time: "08:00 UTC", elapsed: "DAY 1", event: "Story Begins" },
-    { date: "APR 05, 2025", time: "12:00 UTC", elapsed: "DAY -146", event: "Anchorage Begins" },
-    { date: "AUG 30, 2025", time: "08:00 UTC", elapsed: "DAY 1", event: "Ust-Luga Loading" },
+    { date: "AUG 25, 2025", time: "12:00 UTC", elapsed: "DAY -146", event: "Anchorage Begins" },
+    { date: "AUG 31, 2025", time: "08:00 UTC", elapsed: "DAY 1", event: "Ust-Luga Loading" },
     { date: "SEP 02, 2025", time: "14:00 UTC", elapsed: "DAY 3", event: "Baltic Transit" },
     { date: "SEP 07, 2025", time: "11:15 UTC", elapsed: "DAY 8", event: "Drift Begins" },
     { date: "SEP 15, 2025", time: "10:00 UTC", elapsed: "DAY 16", event: "Mid-Atlantic" },
     { date: "SEP 26, 2025", time: "08:00 UTC", elapsed: "DAY 27", event: "Arrives Cuba" },
+    { date: "OCT 04, 2025", time: "12:00 UTC", elapsed: "DAY 35", event: "Dark STS Operation" },
     { date: "OCT 02, 2025", time: "14:00 UTC", elapsed: "DAY 33", event: "STS Complete" }
 ];
 
 // ============================================================================
-// CHAPTER CONFIGURATIONS - Enhanced with better easing
+// CHAPTER CONFIGURATIONS
 // ============================================================================
 const CHAPTERS = {
     0: {
@@ -59,12 +63,14 @@ const CHAPTERS = {
         showLayers: [],
         hideAllLayers: true,
         showLegend: false,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: false
     },
     1: {
         name: 'Ust-Luga Loading',
         center: [28.64559, 59.93183],
-        zoom: 12.97,
+        zoom: 11.97,
         pitch: 0,
         bearing: 0,
         duration: 3000,
@@ -74,7 +80,9 @@ const CHAPTERS = {
         showLayers: [1],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: true
     },
     2: {
         name: 'Baltic Exit',
@@ -89,7 +97,9 @@ const CHAPTERS = {
         showLayers: [1, 2],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: true
     },
     3: {
         name: 'North Sea Transit',
@@ -104,7 +114,9 @@ const CHAPTERS = {
         showLayers: [1, 2, 3],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: true
     },
     4: {
         name: 'Norwegian Sea to Atlantic',
@@ -119,7 +131,9 @@ const CHAPTERS = {
         showLayers: [1, 2, 3, 4],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: true
     },
     5: {
         name: 'Mid-Atlantic to Haiti',
@@ -134,7 +148,9 @@ const CHAPTERS = {
         showLayers: [1, 2, 3, 4, 5],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: true
     },
     6: {
         name: 'Haiti Arrival - STS Transfer',
@@ -144,14 +160,33 @@ const CHAPTERS = {
         bearing: 2,
         duration: 3500,
         curve: 1.3,
-        geojson: null, // Not needed, animateChapter6 handles data
+        geojson: null,
         animate: 'animateChapter6',
         showLayers: [1, 2, 3, 4, 5],
         hideAllLayers: false,
         showLegend: true,
-        showVessel2: true
+        showVessel2: true,
+        showVessel3: false,
+        showUI: true
     },
     7: {
+        name: 'Dark STS - EQUALITY',
+        center: [-74.911, 20.189],
+        zoom: 7.87,
+        pitch: 1,
+        bearing: 94.5,
+        duration: 3500,
+        curve: 1.3,
+        geojson: null,
+        animate: 'animateChapter7New',
+        showLayers: [1, 2, 3, 4, 5],
+        hideAllLayers: false,
+        showLegend: true,
+        showVessel2: false,
+        showVessel3: true,
+        showUI: true
+    },
+    8: {
         name: 'Key Findings',
         center: [-36.76, 49.33],
         zoom: 2,
@@ -164,7 +199,9 @@ const CHAPTERS = {
         showLayers: [1, 2, 3, 4, 5],
         hideAllLayers: false,
         showLegend: false,
-        showVessel2: false
+        showVessel2: false,
+        showVessel3: false,
+        showUI: false
     }
 };
 
@@ -196,7 +233,322 @@ function safeGetElement(id) {
 }
 
 // ============================================================================
-// RING MARKER CREATION - Enhanced animation
+// COMPREHENSIVE CLEANUP FUNCTIONS
+// ============================================================================
+
+function cleanupAllChapterElements() {
+    console.log('🧹 Starting AGGRESSIVE cleanup...');
+    
+    // AGGRESSIVE POPUP REMOVAL - Remove ALL popups from map
+    const popups = document.querySelectorAll('.mapboxgl-popup');
+    popups.forEach(popup => {
+        console.log('🗑️ Removing popup:', popup);
+        popup.remove();
+    });
+    
+    // Force remove any popups that might be in the map container
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        const mapPopups = mapContainer.querySelectorAll('.mapboxgl-popup');
+        mapPopups.forEach(popup => {
+            console.log('🗑️ Forcing popup removal from map container');
+            popup.remove();
+        });
+        
+        // 🔥 NUCLEAR - Remove ALL images from Chapter 6 popups
+        mapContainer.querySelectorAll('img').forEach(img => {
+            if (!img.closest('.mapboxgl-ctrl') && 
+                !img.closest('.mapboxgl-marker') &&
+                !img.closest('.logo-container') &&
+                (img.src.includes('image2A') || 
+                 img.src.includes('image2B') || 
+                 img.classList.contains('annotation-img') ||
+                 img.closest('.enhanced-popup'))) {
+                console.log('🔥 FORCE removing Chapter 6 popup image:', img.src);
+                img.remove();
+            }
+        });
+    }
+    
+    // Remove all custom elements with chapter classes
+    document.querySelectorAll('[class*="chapter"]').forEach(el => {
+        if (!el.id && !el.classList.contains('chapter') && !el.classList.contains('step')) {
+            el.remove();
+        }
+    });
+    
+    // 🔥 AGGRESSIVE Chapter 6 cleanup
+    document.querySelectorAll('.chapter6-popup').forEach(el => {
+        console.log('🔥 Removing chapter6-popup');
+        el.remove();
+    });
+    document.querySelectorAll('.blue-glow').forEach(el => {
+        console.log('🔥 Removing blue-glow popup');
+        el.remove();
+    });
+    document.querySelectorAll('.red-glow').forEach(el => {
+        console.log('🔥 Removing red-glow popup');
+        el.remove();
+    });
+    document.querySelectorAll('.enhanced-popup').forEach(el => {
+        console.log('🔥 Removing enhanced-popup');
+        el.remove();
+    });
+    
+    // Clean up any satellite detection markers
+    document.querySelectorAll('[class*="satellite"]').forEach(el => el.remove());
+    document.querySelectorAll('[class*="detection"]').forEach(el => el.remove());
+    document.querySelectorAll('.chapter6-detection-marker').forEach(el => el.remove());
+    document.querySelectorAll('.sts-transfer-zone').forEach(el => el.remove());
+    
+    // Clean up any animation-specific elements
+    document.querySelectorAll('[class*="drift"]').forEach(el => el.remove());
+    document.querySelectorAll('[class*="sts"]').forEach(el => el.remove());
+    document.querySelectorAll('[class*="marker"]').forEach(el => {
+        // Don't remove main vessel markers
+        if (!el.closest('.mapboxgl-marker')) {
+            el.remove();
+        }
+    });
+    
+    // Clean up any journey markers from Chapter 8
+    if (window.ch7Markers) {
+        try {
+            if (window.ch7Markers.startMarker) window.ch7Markers.startMarker.remove();
+            if (window.ch7Markers.endMarker) window.ch7Markers.endMarker.remove();
+            if (window.ch7Markers.style) window.ch7Markers.style.remove();
+            window.ch7Markers = null;
+        } catch (e) {
+            console.warn('Cleanup warning:', e.message);
+        }
+    }
+    
+    // Remove any style elements from animations
+    document.querySelectorAll('style[id*="ch"]').forEach(el => el.remove());
+    document.querySelectorAll('style[id*="chapter"]').forEach(el => el.remove());
+    
+    // CRITICAL: Remove any elements with position fixed/absolute that might be lingering
+    document.querySelectorAll('[style*="position: fixed"], [style*="position: absolute"]').forEach(el => {
+        // Don't remove UI elements
+        if (!el.closest('#vesselInfoPanel') && 
+            !el.closest('#datetimeDisplay') && 
+            !el.closest('#miniMapContainer') &&
+            !el.closest('.story-progress') &&
+            !el.closest('.logo-container') &&
+            !el.closest('.legend-bar') &&
+            !el.closest('.mapboxgl-marker') &&
+            el.closest('#map')) { // Only elements inside map
+            console.log('🗑️ Removing lingering positioned element');
+            el.remove();
+        }
+    });
+    
+    console.log('✓ Aggressive cleanup complete');
+}
+
+function resetAllLayersOpacity() {
+    console.log('🔄 Resetting all layer opacities...');
+    
+    // Reset chapter layers 1-5
+    for (let i = 1; i <= 5; i++) {
+        const layerId = `chapter${i}-layer`;
+        const glowLayerId = `chapter${i}-glow`;
+        
+        if (STATE.map.getLayer(layerId)) {
+            STATE.map.setPaintProperty(layerId, 'line-opacity', 0);
+        }
+        if (STATE.map.getLayer(glowLayerId)) {
+            STATE.map.setPaintProperty(glowLayerId, 'line-opacity', 0);
+        }
+    }
+    
+    // Reset vessel2 layers
+    if (STATE.map.getLayer('vessel2-layer')) {
+        STATE.map.setPaintProperty('vessel2-layer', 'line-opacity', 0);
+    }
+    if (STATE.map.getLayer('vessel2-glow')) {
+        STATE.map.setPaintProperty('vessel2-glow', 'line-opacity', 0);
+    }
+    
+    // Reset Chapter 7 layers
+    if (STATE.map.getLayer('chapter7-akademik-layer')) {
+        STATE.map.setPaintProperty('chapter7-akademik-layer', 'line-opacity', 0);
+        STATE.map.setPaintProperty('chapter7-akademik-glow', 'line-opacity', 0);
+    }
+    if (STATE.map.getLayer('chapter7-equality-layer')) {
+        STATE.map.setPaintProperty('chapter7-equality-layer', 'line-opacity', 0);
+        STATE.map.setPaintProperty('chapter7-equality-glow', 'line-opacity', 0);
+    }
+    
+    console.log('✓ All layers reset');
+}
+
+function prepareChapter7() {
+    console.log('🎬 Preparing Chapter 7 (Dark STS Operation)...');
+    
+    // Comprehensive cleanup
+    cleanupAllChapterElements();
+    
+    // Reset all layer opacities
+    resetAllLayersOpacity();
+    
+    // Stop all animations
+    stopAllAnimations();
+    
+    // Reset Chapter 7 data sources to empty
+    if (STATE.map.getSource('chapter7-akademik-source')) {
+        STATE.map.getSource('chapter7-akademik-source').setData({
+            type: 'FeatureCollection',
+            features: []
+        });
+    }
+    
+    if (STATE.map.getSource('chapter7-equality-source')) {
+        STATE.map.getSource('chapter7-equality-source').setData({
+            type: 'FeatureCollection',
+            features: []
+        });
+    }
+    
+    console.log('✓ Chapter 7 preparation complete');
+}
+
+function cleanupAfterChapter7() {
+    console.log('🧹 Cleaning up after Chapter 7...');
+    
+    // Hide Chapter 7 layers immediately
+    if (STATE.map.getLayer('chapter7-akademik-layer')) {
+        STATE.map.setPaintProperty('chapter7-akademik-layer', 'line-opacity', 0);
+        STATE.map.setPaintProperty('chapter7-akademik-glow', 'line-opacity', 0);
+    }
+    if (STATE.map.getLayer('chapter7-equality-layer')) {
+        STATE.map.setPaintProperty('chapter7-equality-layer', 'line-opacity', 0);
+        STATE.map.setPaintProperty('chapter7-equality-glow', 'line-opacity', 0);
+    }
+    
+    // Hide vessel3 marker
+    if (STATE.vessel3Marker) {
+        const vessel3El = STATE.vessel3Marker.getElement();
+        vessel3El.style.display = 'none';
+    }
+    
+    // Clean up any lingering elements
+    cleanupAllChapterElements();
+    
+    console.log('✓ Chapter 7 cleanup complete');
+}
+
+function forceCleanupChapter6() {
+    console.log('🧹🧹🧹 FORCING Chapter 6 cleanup (NUCLEAR OPTION)...');
+    
+    // IMMEDIATE - Remove ALL Chapter 6 layers
+    const chapter6Layers = [
+        'chapter6-chapter4-glow', 'chapter6-chapter4-layer',
+        'chapter6-chapter5-glow', 'chapter6-chapter5-layer',
+        'chapter6-vessel2-glow', 'chapter6-vessel2-layer'
+    ];
+    
+    chapter6Layers.forEach(layerId => {
+        if (STATE.map.getLayer(layerId)) {
+            try {
+                STATE.map.setPaintProperty(layerId, 'line-opacity', 0);
+            } catch (e) {
+                console.warn(`Error hiding layer ${layerId}:`, e);
+            }
+        }
+    });
+    
+    // IMMEDIATE - Remove ALL Chapter 6 sources
+    const chapter6Sources = [
+        'chapter6-chapter4-source',
+        'chapter6-chapter5-source',
+        'chapter6-vessel2-source'
+    ];
+    
+    chapter6Sources.forEach(sourceId => {
+        if (STATE.map.getSource(sourceId)) {
+            try {
+                // Don't remove source, just clear data to prevent hanging
+                STATE.map.getSource(sourceId).setData({
+                    type: 'FeatureCollection',
+                    features: []
+                });
+            } catch (e) {
+                console.warn(`Error clearing source ${sourceId}:`, e);
+            }
+        }
+    });
+    
+    // NUCLEAR - Remove ALL popups IMMEDIATELY (synchronous)
+    document.querySelectorAll('.mapboxgl-popup').forEach(popup => {
+        popup.remove();
+    });
+    
+    // NUCLEAR - Remove ALL Chapter 6 specific elements IMMEDIATELY
+    document.querySelectorAll('.chapter6-popup').forEach(el => el.remove());
+    document.querySelectorAll('.chapter6-detection-marker').forEach(el => el.remove());
+    document.querySelectorAll('.sts-transfer-zone').forEach(el => el.remove());
+    document.querySelectorAll('.chapter6-marker-core').forEach(el => el.remove());
+    document.querySelectorAll('.chapter6-marker-ring').forEach(el => el.remove());
+    document.querySelectorAll('.sts-subtle-glow').forEach(el => el.remove());
+    document.querySelectorAll('.sts-ring-subtle-1').forEach(el => el.remove());
+    document.querySelectorAll('.sts-ring-subtle-2').forEach(el => el.remove());
+    document.querySelectorAll('.sts-ring-subtle-3').forEach(el => el.remove());
+    document.querySelectorAll('.sts-center-dot').forEach(el => el.remove());
+    document.querySelectorAll('.enhanced-popup').forEach(el => el.remove());
+    document.querySelectorAll('.blue-glow').forEach(el => el.remove());
+    document.querySelectorAll('.red-glow').forEach(el => el.remove());
+    
+    // NUCLEAR - Remove any images that might be loaded
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        mapContainer.querySelectorAll('img').forEach(img => {
+            // Only remove images that are NOT part of Mapbox UI
+            if (!img.closest('.mapboxgl-ctrl') && 
+                !img.closest('.mapboxgl-marker') &&
+                (img.src.includes('image2A') || img.src.includes('image2B') || img.classList.contains('annotation-img'))) {
+                console.log('🗑️🗑️🗑️ FORCE removing Chapter 6 image');
+                img.remove();
+            }
+        });
+    }
+    
+    // NUCLEAR - Remove any divs with background images
+    if (mapContainer) {
+        mapContainer.querySelectorAll('div[style*="background-image"]').forEach(div => {
+            if (!div.closest('.mapboxgl-ctrl') && !div.closest('.mapboxgl-marker')) {
+                div.remove();
+            }
+        });
+    }
+    
+    // Hide vessel2 marker if visible
+    if (STATE.vessel2Marker) {
+        const vessel2El = STATE.vessel2Marker.getElement();
+        vessel2El.style.display = 'none';
+        vessel2El.style.opacity = '0';
+    }
+    
+    console.log('✅✅✅ Chapter 6 NUCLEAR cleanup complete');
+}
+
+function prepareChapter6() {
+    console.log('🎬 Preparing Chapter 6 (Haiti STS Transfer)...');
+    
+    // Comprehensive cleanup before Chapter 6
+    cleanupAllChapterElements();
+    
+    // Reset all layer opacities
+    resetAllLayersOpacity();
+    
+    // Stop all animations
+    stopAllAnimations();
+    
+    console.log('✓ Chapter 6 preparation complete');
+}
+
+// ============================================================================
+// RING MARKER CREATION
 // ============================================================================
 
 function createRingMarker(color, size = 24) {
@@ -212,7 +564,6 @@ function createRingMarker(color, size = 24) {
         position: relative;
     `;
     
-    // Add inner glow
     const innerGlow = document.createElement('div');
     innerGlow.style.cssText = `
         position: absolute;
@@ -227,24 +578,15 @@ function createRingMarker(color, size = 24) {
     `;
     el.appendChild(innerGlow);
     
-    // Add CSS animation if not already added
     if (!document.getElementById('ringPulseAnimation')) {
         const style = document.createElement('style');
         style.id = 'ringPulseAnimation';
         style.textContent = `
             @keyframes ringPulse {
-                0%, 100% {
-                    opacity: 1;
-                    transform: scale(1);
-                }
-                50% {
-                    opacity: 0.5;
-                    transform: scale(1.2);
-                }
+                0%, 100% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.5; transform: scale(1.2); }
             }
-            .vessel-ring-marker {
-                animation: ringPulse 2s ease-in-out infinite;
-            }
+            .vessel-ring-marker { animation: ringPulse 2s ease-in-out infinite; }
         `;
         document.head.appendChild(style);
     }
@@ -253,14 +595,13 @@ function createRingMarker(color, size = 24) {
 }
 
 // ============================================================================
-// DATA LOADING - Enhanced with better error handling
+// DATA LOADING
 // ============================================================================
 
 async function loadChapterData() {
     console.log('📦 Loading chapter data...');
     const loadPromises = [];
     
-    // Load chapter data files (1-5)
     for (let i = 1; i <= 5; i++) {
         loadPromises.push(
             fetch(`chapter${i}data.geojson`)
@@ -281,7 +622,6 @@ async function loadChapterData() {
         );
     }
     
-    // Load vessel2 data
     loadPromises.push(
         fetch('vessel2.geojson')
             .then(response => {
@@ -300,6 +640,42 @@ async function loadChapterData() {
             })
     );
     
+    loadPromises.push(
+        fetch('akademik_gubkin_ais_oct3_5.geojson')
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                STATE.chapter7AkademikData = data;
+                console.log(`✓ Chapter 7 AKADEMIK data loaded (${data.features[0].geometry.coordinates.length} points)`);
+                return { chapter7Akademik: true, success: true };
+            })
+            .catch(error => {
+                console.warn('⚠ Chapter 7 AKADEMIK data not found:', error.message);
+                STATE.chapter7AkademikData = null;
+                return { chapter7Akademik: true, success: false };
+            })
+    );
+    
+    loadPromises.push(
+        fetch('equality_ais.geojson')
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                STATE.chapter7EqualityData = data;
+                console.log(`✓ Chapter 7 EQUALITY data loaded (${data.features[0].geometry.coordinates.length} points)`);
+                return { chapter7Equality: true, success: true };
+            })
+            .catch(error => {
+                console.warn('⚠ Chapter 7 EQUALITY data not found:', error.message);
+                STATE.chapter7EqualityData = null;
+                return { chapter7Equality: true, success: false };
+            })
+    );
+    
     const results = await Promise.all(loadPromises);
     const successCount = results.filter(r => r.success).length;
     console.log(`✓ Data loading complete: ${successCount}/${results.length} files loaded`);
@@ -308,7 +684,7 @@ async function loadChapterData() {
 }
 
 // ============================================================================
-// MINI MAP - Enhanced with larger size and light style
+// MINI MAP - FIXED WITH BETTER VISIBILITY
 // ============================================================================
 
 function initMiniMap() {
@@ -321,47 +697,90 @@ function initMiniMap() {
             return;
         }
         
-        // Clear and recreate container to ensure clean slate
         const parent = container.parentElement;
         parent.innerHTML = `
-            <div id="miniMap" style="width: 170px; height: 90px; overflow: hidden;"></div>
+            <div id="miniMap" style="width: 170px; height: 130px; overflow: hidden; border-radius: 10px;"></div>
             <div class="map-label">GLOBAL POSITION</div>
         `;
         
-        // Create mini map with light style for better readability
         STATE.miniMap = new mapboxgl.Map({
             container: 'miniMap',
-            style: 'mapbox://styles/mapbox/light-v11', // Light style for better readability
+            style: 'mapbox://styles/mapbox/light-v11',
             center: [0, 30],
-            zoom: 0.8,
+            zoom: 1.5,
             interactive: false,
             attributionControl: false,
             logoPosition: 'bottom-right',
             preserveDrawingBuffer: true
         });
         
-        // Ensure map resizes properly
-        STATE.miniMap.on('load', () => {
-            STATE.miniMap.resize();
-        });
-        
-        // Create enhanced marker
+        // Create HIGHLY VISIBLE marker element
         const markerEl = document.createElement('div');
+        markerEl.className = 'mini-map-marker';
         markerEl.style.cssText = `
-            width: 10px;
-            height: 10px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: #00ff88;
-            border: 2px solid white;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.9), 0 0 5px rgba(0, 255, 136, 1);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 4px solid white;
+            box-shadow: 0 0 25px rgba(0, 255, 136, 1), 
+                        0 0 15px rgba(0, 255, 136, 1),
+                        inset 0 0 10px rgba(0, 255, 136, 0.9);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1000;
         `;
         
-        STATE.miniMarker = new mapboxgl.Marker(markerEl)
-            .setLngLat([0, 30])
-            .addTo(STATE.miniMap);
+        // Add animated pulsing ring
+        const pulseRing = document.createElement('div');
+        pulseRing.style.cssText = `
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            opacity: 0.7;
+            animation: miniMapPulse 2s ease-out infinite;
+        `;
+        markerEl.appendChild(pulseRing);
         
-        console.log('✓ Enhanced mini map initialized (light style, improved visibility)');
+        // Add pulse animation if not exists
+        if (!document.getElementById('miniMapPulseAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'miniMapPulseAnimation';
+            style.textContent = `
+                @keyframes miniMapPulse {
+                    0% {
+                        transform: scale(0.4);
+                        opacity: 0.9;
+                    }
+                    100% {
+                        transform: scale(1.8);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Create marker
+        STATE.miniMarker = new mapboxgl.Marker(markerEl)
+            .setLngLat([0, 30]);
+        
+        // Add marker immediately when map loads - NO DELAYS
+        STATE.miniMap.on('load', () => {
+            STATE.miniMarker.addTo(STATE.miniMap);
+            STATE.miniMap.resize();
+            // Force another resize after a frame to ensure proper dimensions
+            requestAnimationFrame(() => {
+                STATE.miniMap.resize();
+                console.log('✓ Mini map marker visible immediately');
+            });
+        });
+        
+        console.log('✓ Mini map initialized');
     } catch (error) {
         console.error('Mini map initialization error:', error);
     }
@@ -371,19 +790,42 @@ function updateMiniMap(lng, lat) {
     if (!STATE.miniMarker || !STATE.miniMap) return;
     
     try {
+        // Update marker position
         STATE.miniMarker.setLngLat([lng, lat]);
+        
+        // Dynamic zoom based on location
+        let targetZoom = 1.5;
+        
+        // Zoom in more for specific regions
+        if (Math.abs(lat) < 25 && Math.abs(lng) < 30) {
+            // Europe/Africa region
+            targetZoom = 2.8;
+        } else if (lng < -60 && Math.abs(lat) < 30) {
+            // Caribbean region
+            targetZoom = 3.2;
+        } else if (Math.abs(lng) > 140) {
+            // Pacific - zoom out
+            targetZoom = 1.2;
+        } else if (Math.abs(lat) > 60) {
+            // Arctic - zoom out slightly
+            targetZoom = 1.8;
+        }
+        
+        // Instant pan and zoom - NO DELAYS
         STATE.miniMap.easeTo({
             center: [lng, lat],
-            duration: 1200,
-            easing: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+            zoom: targetZoom,
+            duration: 300,
+            easing: t => t
         });
+        
     } catch (error) {
         console.warn('Mini map update error:', error);
     }
 }
 
 // ============================================================================
-// LAYER MANAGEMENT - Enhanced with better persistence
+// LAYER MANAGEMENT
 // ============================================================================
 
 function addLayerToMap(chapterNum) {
@@ -396,7 +838,6 @@ function addLayerToMap(chapterNum) {
     const glowLayerId = `chapter${chapterNum}-glow`;
     
     try {
-        // Add source
         if (!STATE.map.getSource(sourceId)) {
             STATE.map.addSource(sourceId, {
                 type: 'geojson',
@@ -405,7 +846,6 @@ function addLayerToMap(chapterNum) {
             });
         }
         
-        // Add glow layer (background)
         if (!STATE.map.getLayer(glowLayerId)) {
             STATE.map.addLayer({
                 id: glowLayerId,
@@ -424,7 +864,6 @@ function addLayerToMap(chapterNum) {
             });
         }
         
-        // Add main layer (foreground)
         if (!STATE.map.getLayer(layerId)) {
             STATE.map.addLayer({
                 id: layerId,
@@ -461,7 +900,6 @@ function addVessel2Layers() {
     if (!STATE.vessel2Data || STATE.loadedLayers.has('vessel2')) return;
     
     try {
-        // Add source
         if (!STATE.map.getSource('vessel2-data')) {
             STATE.map.addSource('vessel2-data', {
                 type: 'geojson',
@@ -470,7 +908,6 @@ function addVessel2Layers() {
             });
         }
         
-        // Add glow layer
         if (!STATE.map.getLayer('vessel2-glow')) {
             STATE.map.addLayer({
                 id: 'vessel2-glow',
@@ -489,7 +926,6 @@ function addVessel2Layers() {
             });
         }
         
-        // Add main layer
         if (!STATE.map.getLayer('vessel2-layer')) {
             STATE.map.addLayer({
                 id: 'vessel2-layer',
@@ -514,10 +950,118 @@ function addVessel2Layers() {
     }
 }
 
+function addChapter7Layers() {
+    if (STATE.loadedLayers.has('chapter7')) return;
+    
+    try {
+        // AKADEMIK GUBKIN Chapter 7 layers
+        if (STATE.chapter7AkademikData) {
+            if (!STATE.map.getSource('chapter7-akademik-source')) {
+                STATE.map.addSource('chapter7-akademik-source', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    },
+                    lineMetrics: true
+                });
+            }
+            
+            if (!STATE.map.getLayer('chapter7-akademik-glow')) {
+                STATE.map.addLayer({
+                    id: 'chapter7-akademik-glow',
+                    type: 'line',
+                    source: 'chapter7-akademik-source',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#00ff88',
+                        'line-width': 8,
+                        'line-opacity': 0,
+                        'line-blur': 4
+                    }
+                });
+            }
+            
+            if (!STATE.map.getLayer('chapter7-akademik-layer')) {
+                STATE.map.addLayer({
+                    id: 'chapter7-akademik-layer',
+                    type: 'line',
+                    source: 'chapter7-akademik-source',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#00ff88',
+                        'line-width': 3,
+                        'line-opacity': 0
+                    }
+                });
+            }
+        }
+        
+        // EQUALITY Chapter 7 layers
+        if (STATE.chapter7EqualityData) {
+            if (!STATE.map.getSource('chapter7-equality-source')) {
+                STATE.map.addSource('chapter7-equality-source', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    },
+                    lineMetrics: true
+                });
+            }
+            
+            if (!STATE.map.getLayer('chapter7-equality-glow')) {
+                STATE.map.addLayer({
+                    id: 'chapter7-equality-glow',
+                    type: 'line',
+                    source: 'chapter7-equality-source',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#ff6b9d',
+                        'line-width': 8,
+                        'line-opacity': 0,
+                        'line-blur': 4
+                    }
+                });
+            }
+            
+            if (!STATE.map.getLayer('chapter7-equality-layer')) {
+                STATE.map.addLayer({
+                    id: 'chapter7-equality-layer',
+                    type: 'line',
+                    source: 'chapter7-equality-source',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#ff6b9d',
+                        'line-width': 3,
+                        'line-opacity': 0
+                    }
+                });
+            }
+        }
+        
+        STATE.loadedLayers.add('chapter7');
+        console.log('✓ Chapter 7 layers added (AKADEMIK + EQUALITY)');
+    } catch (error) {
+        console.error('Error adding Chapter 7 layers:', error);
+    }
+}
+
 function updateLayerVisibility(layersToShow, immediate = false) {
     const duration = immediate ? 0 : 600;
     
-    // Update main vessel layers (1-5)
     for (let i = 1; i <= 5; i++) {
         const layerId = `chapter${i}-layer`;
         const glowLayerId = `chapter${i}-glow`;
@@ -558,6 +1102,36 @@ function updateVessel2Visibility(show, immediate = false) {
     }
 }
 
+function updateChapter7Visibility(show, immediate = false) {
+    if (!STATE.loadedLayers.has('chapter7')) {
+        addChapter7Layers();
+    }
+    
+    const duration = immediate ? 0 : 600;
+    const targetOpacity = show ? 0.75 : 0;
+    const targetGlowOpacity = show ? 0.35 : 0;
+    
+    if (STATE.map.getLayer('chapter7-akademik-layer')) {
+        if (immediate) {
+            STATE.map.setPaintProperty('chapter7-akademik-layer', 'line-opacity', targetOpacity);
+            STATE.map.setPaintProperty('chapter7-akademik-glow', 'line-opacity', targetGlowOpacity);
+        } else {
+            animateProperty('chapter7-akademik-layer', 'line-opacity', targetOpacity, duration);
+            animateProperty('chapter7-akademik-glow', 'line-opacity', targetGlowOpacity, duration);
+        }
+    }
+    
+    if (STATE.map.getLayer('chapter7-equality-layer')) {
+        if (immediate) {
+            STATE.map.setPaintProperty('chapter7-equality-layer', 'line-opacity', targetOpacity);
+            STATE.map.setPaintProperty('chapter7-equality-glow', 'line-opacity', targetGlowOpacity);
+        } else {
+            animateProperty('chapter7-equality-layer', 'line-opacity', targetOpacity, duration);
+            animateProperty('chapter7-equality-glow', 'line-opacity', targetGlowOpacity, duration);
+        }
+    }
+}
+
 function animateProperty(layerId, property, targetValue, duration) {
     if (!STATE.map.getLayer(layerId)) return;
     
@@ -586,8 +1160,48 @@ function animateProperty(layerId, property, targetValue, duration) {
 }
 
 // ============================================================================
-// UI UPDATE FUNCTIONS - Enhanced
+// UI UPDATE FUNCTIONS
 // ============================================================================
+
+function updateUIVisibility(show) {
+    const vesselPanel = safeGetElement('vesselInfoPanel');
+    const datetimeDisplay = safeGetElement('datetimeDisplay');
+    const miniMapContainer = safeGetElement('miniMapContainer');
+    
+    const displayValue = show ? 'block' : 'none';
+    const opacity = show ? '1' : '0';
+    
+    if (vesselPanel) {
+        vesselPanel.style.display = displayValue;
+        setTimeout(() => {
+            vesselPanel.style.opacity = opacity;
+        }, 10);
+    }
+    
+    if (datetimeDisplay) {
+        datetimeDisplay.style.display = displayValue;
+        setTimeout(() => {
+            datetimeDisplay.style.opacity = opacity;
+        }, 10);
+    }
+    
+    if (miniMapContainer) {
+        miniMapContainer.style.display = displayValue;
+        
+        // CRITICAL: Resize mini map when container becomes visible
+        if (show && STATE.miniMap) {
+            // Use requestAnimationFrame to ensure display change has taken effect
+            requestAnimationFrame(() => {
+                STATE.miniMap.resize();
+                console.log('✓ Mini map resized after container visible');
+            });
+        }
+        
+        setTimeout(() => {
+            miniMapContainer.style.opacity = opacity;
+        }, 10);
+    }
+}
 
 function updateVesselPanel(chapterNum) {
     const panel = safeGetElement('vesselInfoPanel');
@@ -603,12 +1217,10 @@ function updateVesselPanel(chapterNum) {
         value3: safeGetElement('infoValue3')
     };
     
-    // Fade out
     panel.style.opacity = '0';
     
     setTimeout(() => {
         if (chapterNum === 6) {
-            // Chapter 6: Dual vessel display
             panel.classList.add('dual-vessel');
             
             if (elements.label1) elements.label1.textContent = 'VESSEL 1';
@@ -620,8 +1232,19 @@ function updateVesselPanel(chapterNum) {
             
             if (elements.label3) elements.label3.textContent = 'OPERATION';
             if (elements.value3) elements.value3.textContent = 'STS TRANSFER';
+        } else if (chapterNum === 7) {
+            panel.classList.add('dual-vessel');
+            
+            if (elements.label1) elements.label1.textContent = 'VESSEL 1';
+            if (elements.name) elements.name.innerHTML = '<span class="vessel-indicator vessel-1-indicator"></span>AKADEMIK GUBKIN';
+            if (elements.imo) elements.imo.textContent = '9842190';
+            
+            if (elements.label2) elements.label2.textContent = 'VESSEL 3';
+            if (elements.value2) elements.value2.innerHTML = '<span class="vessel-indicator vessel-3-indicator"></span>EQUALITY / 9216547';
+            
+            if (elements.label3) elements.label3.textContent = 'STATUS';
+            if (elements.value3) elements.value3.textContent = 'DARK STS';
         } else {
-            // Default: Single vessel display
             panel.classList.remove('dual-vessel');
             
             if (elements.label1) elements.label1.textContent = 'VESSEL / IMO';
@@ -629,23 +1252,24 @@ function updateVesselPanel(chapterNum) {
             if (elements.imo) elements.imo.textContent = '9842190';
             
             if (elements.label2) elements.label2.textContent = 'VOYAGE PERIOD';
-            if (elements.value2) elements.value2.textContent = 'AUG 30 - OCT 2';
+            if (elements.value2) elements.value2.textContent = 'AUG 28 - OCT 5';
             
             if (elements.label3) elements.label3.textContent = 'CARGO';
             if (elements.value3) elements.value3.textContent = 'RUSSIAN CRUDE';
         }
         
-        // Fade in
         panel.style.transition = 'opacity 0.4s ease';
         panel.style.opacity = '1';
     }, 200);
 }
 
 function updateLegend(chapterNum) {
-    const legendBar = document.querySelector('.legend-bar');
+    const legendBar = safeGetElement('legendBar');
     if (!legendBar) return;
     
-    if (chapterNum >= 1 && chapterNum <= 6) {
+    const chapter = CHAPTERS[chapterNum];
+    
+    if (chapter && chapter.showLegend && chapterNum >= 1 && chapterNum <= 7) {
         legendBar.style.display = 'flex';
         legendBar.style.opacity = '0';
         
@@ -654,11 +1278,22 @@ function updateLegend(chapterNum) {
                 legendBar.innerHTML = `
                     <div class="legend-item">
                         <span class="legend-dot ais"></span>
-                        <span>AKADEMIK GUBKIN</span>
+                        <span>AKADEMIK GUBKIN AIS Track</span>
                     </div>
                     <div class="legend-item">
                         <span class="legend-dot vessel2"></span>
-                        <span>LOURDES</span>
+                        <span>LOURDES AIS Track</span>
+                    </div>
+                `;
+            } else if (chapterNum === 7) {
+                legendBar.innerHTML = `
+                    <div class="legend-item">
+                        <span class="legend-dot ais"></span>
+                        <span>AKADEMIK GUBKIN AIS Track</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot vessel3"></span>
+                        <span>EQUALITY AIS Track</span>
                     </div>
                 `;
             } else {
@@ -693,20 +1328,17 @@ function updateDateTime(index) {
     
     const elements = [dateEl, timeEl, elapsedEl];
     
-    // Fade out
     elements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(-5px)';
         el.style.transition = 'all 0.3s ease';
     });
     
-    // Update content
     setTimeout(() => {
         dateEl.textContent = data.date;
         timeEl.textContent = data.time;
         elapsedEl.textContent = data.elapsed;
         
-        // Staggered fade in
         elements.forEach((el, i) => {
             setTimeout(() => {
                 el.style.opacity = '1';
@@ -728,10 +1360,10 @@ function updateProgressBar(chapterNum) {
     if (chapterNum === 0) {
         progressValue = 0;
         progressLabel = 'INTRODUCTION';
-    } else if (chapterNum >= 1 && chapterNum <= 6) {
-        progressValue = (chapterNum / 7) * 100;
-        progressLabel = `CHAPTER ${chapterNum} OF 6`;
-    } else if (chapterNum === 7) {
+    } else if (chapterNum >= 1 && chapterNum <= 7) {
+        progressValue = (chapterNum / 8) * 100;
+        progressLabel = `CHAPTER ${chapterNum} OF 7`;
+    } else if (chapterNum === 8) {
         progressValue = 100;
         progressLabel = 'KEY FINDINGS';
     }
@@ -776,6 +1408,32 @@ function updateVessel2Marker(show) {
     }
 }
 
+function updateVessel3Marker(show) {
+    if (!STATE.vessel3Marker) return;
+    
+    const vessel3El = STATE.vessel3Marker.getElement();
+    
+    if (show) {
+        vessel3El.style.display = 'block';
+        vessel3El.style.opacity = '0';
+        vessel3El.style.transform = 'scale(0.8)';
+        
+        setTimeout(() => {
+            vessel3El.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            vessel3El.style.opacity = '1';
+            vessel3El.style.transform = 'scale(1)';
+        }, 100);
+    } else {
+        vessel3El.style.transition = 'all 0.4s ease';
+        vessel3El.style.opacity = '0';
+        vessel3El.style.transform = 'scale(0.8)';
+        
+        setTimeout(() => {
+            vessel3El.style.display = 'none';
+        }, 400);
+    }
+}
+
 // ============================================================================
 // ANIMATION MANAGEMENT
 // ============================================================================
@@ -800,26 +1458,32 @@ function startChapterAnimation(chapterNum) {
     }
     
     try {
-        if (chapterNum === 7) {
-            // Chapter 7: Journey overview with endpoint markers
+        if (chapterNum === 8) {
             const animation = animateFunc(
                 STATE.map,
                 STATE.vesselMarker
             );
             STATE.activeAnimations.set(chapterNum, animation);
-        } else if (chapterNum === 6 && STATE.vessel2Data && STATE.chapterData[4] && STATE.chapterData[5]) {
-            // Chapter 6: Chapter 4 + Chapter 5 + Vessel 2
+        } else if (chapterNum === 7 && STATE.chapter7AkademikData && STATE.chapter7EqualityData) {
             const animation = animateFunc(
                 STATE.map,
-                STATE.chapterData[4],  // Chapter 4 data (static background)
-                STATE.chapterData[5],  // Chapter 5 data (animate this)
-                STATE.vessel2Data,     // Vessel 2 data (animate this)
+                STATE.chapter7AkademikData,
+                STATE.chapter7EqualityData,
+                STATE.vesselMarker,
+                STATE.vessel3Marker
+            );
+            STATE.activeAnimations.set(chapterNum, animation);
+        } else if (chapterNum === 6 && STATE.vessel2Data && STATE.chapterData[4] && STATE.chapterData[5]) {
+            const animation = animateFunc(
+                STATE.map,
+                STATE.chapterData[4],
+                STATE.chapterData[5],
+                STATE.vessel2Data,
                 STATE.vesselMarker,
                 STATE.vessel2Marker
             );
             STATE.activeAnimations.set(chapterNum, animation);
         } else if (chapterNum === 5 && STATE.chapterData[4]) {
-            // Chapter 5: Re-animate Chapter 4 slower
             const animation = animateFunc(
                 STATE.map,
                 STATE.chapterData[4],
@@ -827,7 +1491,6 @@ function startChapterAnimation(chapterNum) {
             );
             STATE.activeAnimations.set(chapterNum, animation);
         } else if (chapterNum === 4 && STATE.chapterData[4]) {
-            // Chapter 4: Normal animation
             const animation = animateFunc(
                 STATE.map,
                 STATE.chapterData[4],
@@ -835,7 +1498,6 @@ function startChapterAnimation(chapterNum) {
             );
             STATE.activeAnimations.set(chapterNum, animation);
         } else if (chapterNum === 3 && STATE.chapterData[3]) {
-            // Chapter 3: With satellite detection
             const animation = animateFunc(
                 STATE.map,
                 STATE.chapterData[3],
@@ -843,7 +1505,6 @@ function startChapterAnimation(chapterNum) {
             );
             STATE.activeAnimations.set(chapterNum, animation);
         } else if (STATE.chapterData[chapterNum]) {
-            // Other chapters: Standard animation
             const animation = animateFunc(
                 STATE.map,
                 STATE.chapterData[chapterNum],
@@ -857,25 +1518,9 @@ function startChapterAnimation(chapterNum) {
         console.error(`Animation error for chapter ${chapterNum}:`, error);
     }
 }
-// ============================================================================
-// CHAPTER NAVIGATION - Enhanced with better state management
-// ============================================================================
 
 // ============================================================================
-// CHAPTER NAVIGATION - Enhanced with explicit layer management
-// ============================================================================
-// Layer Visibility Strategy:
-// - Chapter 0 (Introduction): No layers visible (hideAllLayers: true)
-// - Chapter 1 (Ust-Luga): Only chapter1 layers visible
-// - Chapter 2 (Baltic Exit): chapter1 + chapter2 layers visible
-// - Chapter 3 (North Sea): chapter1 + chapter2 + chapter3 layers visible
-// - Chapter 4 (Norwegian Sea): chapter1-4 layers visible
-// - Chapter 5 (Mid-Atlantic): chapter1-5 layers visible
-// - Chapter 6 (Haiti STS): chapter1-5 + vessel2 layers visible
-// - Chapter 7 (Findings): All layers remain visible
-// 
-// Implementation: Explicitly hide all layers not in showLayers to prevent
-// "ghost" layers from appearing during chapter transitions
+// CHAPTER NAVIGATION - WITH CHAPTER 7 CLEANUP
 // ============================================================================
 
 function flyToChapter(chapterNum) {
@@ -884,14 +1529,12 @@ function flyToChapter(chapterNum) {
         return;
     }
     
-    // Handle fast scrolling - queue chapter if transitioning
     if (STATE.isTransitioning && chapterNum !== STATE.currentChapter) {
         STATE.pendingChapter = chapterNum;
         console.log(`⏸ Queued chapter ${chapterNum}`);
         return;
     }
     
-    // Prevent redundant transitions
     if (chapterNum === STATE.currentChapter && !STATE.pendingChapter) {
         return;
     }
@@ -903,22 +1546,57 @@ function flyToChapter(chapterNum) {
     const chapter = CHAPTERS[chapterNum];
     console.log(`→ Transitioning to Chapter ${chapterNum}: ${chapter.name}`);
     
-    // Stop any running animations
+    // 🔥 NUCLEAR CLEANUP - IMMEDIATE execution BEFORE anything else
+    // This runs SYNCHRONOUSLY to prevent any delays
+    
+    // CRITICAL: If leaving Chapter 6, FORCE cleanup immediately
+    if (STATE.previousChapter === 6 && chapterNum !== 6) {
+        forceCleanupChapter6();
+    }
+    
+    // CRITICAL: If leaving Chapter 7, cleanup immediately
+    if (STATE.previousChapter === 7 && chapterNum !== 7) {
+        cleanupAfterChapter7();
+    }
+    
+    // CRITICAL: ALWAYS cleanup on every transition to prevent lingering elements
+    cleanupAllChapterElements();
+    
+    // CRITICAL: If entering Chapter 6, prepare immediately
+    if (chapterNum === 6) {
+        prepareChapter6();
+    }
+    
+    // CRITICAL: Comprehensive cleanup when entering Chapter 7
+    if (chapterNum === 7) {
+        prepareChapter7();
+    }
+    
+    // Stop all animations
     stopAllAnimations();
     
-    // Update UI immediately for responsive feel
+    // Update UI visibility
+    updateUIVisibility(chapter.showUI);
+    
+    // CRITICAL: Ensure mini map is resized when becoming visible
+    if (chapter.showUI && STATE.miniMap) {
+        requestAnimationFrame(() => {
+            STATE.miniMap.resize();
+        });
+    }
+    
+    // Update UI elements
     updateProgressBar(chapterNum);
     updateDateTime(chapterNum);
     updateVesselPanel(chapterNum);
     updateLegend(chapterNum);
     
-    // Ensure layers are loaded before showing
+    // Ensure layers are loaded
     if (!chapter.hideAllLayers) {
         ensureLayersLoaded(chapter.showLayers);
     }
     
-    // CRITICAL: Explicitly hide all chapter layers that shouldn't be visible
-    // This prevents "ghost" layers from appearing when switching chapters
+    // Hide all chapter layers that shouldn't be visible IMMEDIATELY
     for (let i = 1; i <= 5; i++) {
         if (!chapter.showLayers.includes(i)) {
             const layerId = `chapter${i}-layer`;
@@ -937,7 +1615,12 @@ function flyToChapter(chapterNum) {
         addVessel2Layers();
     }
     
-    // Hide vessel2 if not needed for this chapter
+    // Handle Chapter 7 layers
+    if (chapterNum === 7 && !STATE.loadedLayers.has('chapter7')) {
+        addChapter7Layers();
+    }
+    
+    // Hide vessel2 IMMEDIATELY if not needed
     if (!chapter.showVessel2) {
         if (STATE.map.getLayer('vessel2-layer')) {
             STATE.map.setPaintProperty('vessel2-layer', 'line-opacity', 0);
@@ -945,9 +1628,33 @@ function flyToChapter(chapterNum) {
         if (STATE.map.getLayer('vessel2-glow')) {
             STATE.map.setPaintProperty('vessel2-glow', 'line-opacity', 0);
         }
+        // Also hide the marker immediately
+        if (STATE.vessel2Marker) {
+            const vessel2El = STATE.vessel2Marker.getElement();
+            vessel2El.style.display = 'none';
+            vessel2El.style.opacity = '0';
+        }
     }
     
-    // Camera movement with enhanced easing
+    // Hide Chapter 7 layers IMMEDIATELY if not on Chapter 7
+    if (chapterNum !== 7) {
+        if (STATE.map.getLayer('chapter7-akademik-layer')) {
+            STATE.map.setPaintProperty('chapter7-akademik-layer', 'line-opacity', 0);
+            STATE.map.setPaintProperty('chapter7-akademik-glow', 'line-opacity', 0);
+        }
+        if (STATE.map.getLayer('chapter7-equality-layer')) {
+            STATE.map.setPaintProperty('chapter7-equality-layer', 'line-opacity', 0);
+            STATE.map.setPaintProperty('chapter7-equality-glow', 'line-opacity', 0);
+        }
+        // Also hide vessel3 marker immediately
+        if (STATE.vessel3Marker) {
+            const vessel3El = STATE.vessel3Marker.getElement();
+            vessel3El.style.display = 'none';
+            vessel3El.style.opacity = '0';
+        }
+    }
+    
+    // Camera movement
     STATE.map.flyTo({
         center: chapter.center,
         zoom: chapter.zoom,
@@ -962,48 +1669,51 @@ function flyToChapter(chapterNum) {
     // Update mini map
     updateMiniMap(chapter.center[0], chapter.center[1]);
     
-    // Layer visibility updates - staggered for smooth transition
+    // Layer visibility updates - now with reduced delay for faster response
     setTimeout(() => {
         if (chapter.hideAllLayers) {
             updateLayerVisibility([], false);
             updateVessel2Visibility(false, false);
+            updateChapter7Visibility(false, false);
         } else {
-            // For chapters with animations, don't show pre-loaded layers
-            // Let the animation handle visibility instead
             const layersToShow = chapter.showLayers.filter(num => num !== chapterNum);
             
-            // Show previous chapter layers, but not current chapter (animation handles it)
             updateLayerVisibility(layersToShow, false);
             updateVessel2Visibility(chapter.showVessel2, false);
+            
+            if (chapterNum === 7) {
+                updateChapter7Visibility(true, false);
+            } else {
+                updateChapter7Visibility(false, false);
+            }
         }
         
-        // Update vessel2 marker
         updateVessel2Marker(chapter.showVessel2);
-    }, 200);
+        updateVessel3Marker(chapter.showVessel3);
+    }, 100); // REDUCED from 200ms for faster cleanup
     
-    // Start chapter animation after layers are visible
+    // Start chapter animation - slightly delayed to ensure cleanup is complete
     if (chapter.animate) {
         setTimeout(() => {
             startChapterAnimation(chapterNum);
-        }, 600);
+        }, 300);  // REDUCED from 400ms for faster transitions
     }
     
     // Mark transition complete
     setTimeout(() => {
         STATE.isTransitioning = false;
         
-        // Process pending chapter
         if (STATE.pendingChapter !== null && STATE.pendingChapter !== STATE.currentChapter) {
             const nextChapter = STATE.pendingChapter;
             STATE.pendingChapter = null;
             console.log(`▶ Processing queued chapter ${nextChapter}`);
             flyToChapter(nextChapter);
         }
-    }, chapter.duration * 0.7);
+    }, chapter.duration * 0.6); // REDUCED from 0.7 for faster transitions
 }
 
 // ============================================================================
-// SCROLLYTELLING INITIALIZATION - Enhanced
+// SCROLLYTELLING INITIALIZATION
 // ============================================================================
 
 function initScrollytelling() {
@@ -1024,30 +1734,24 @@ function initScrollytelling() {
         .onStepEnter(response => {
             const stepIndex = parseInt(response.element.dataset.step);
             
-            // Remove active class from all steps
             document.querySelectorAll('.step').forEach(step => {
                 step.classList.remove('is-active');
             });
             
-            // Add active class to current step
             response.element.classList.add('is-active');
             
-            // Navigate to chapter
             flyToChapter(stepIndex);
         })
         .onStepProgress(response => {
-            // Optional: Use progress for smooth transitions
-            // Can be used for parallax effects or progressive reveals
+            // Optional progress handling
         });
     
-    // Initialize at introduction
     setTimeout(() => {
         flyToChapter(0);
         STATE.isInitialized = true;
-        console.log('✓ Scrollytelling initialized - 8 chapters ready');
+        console.log('✓ Scrollytelling initialized - 9 chapters ready (0-8)');
     }, 500);
     
-    // Handle resize with debouncing
     const handleResize = debounce(() => {
         try {
             checkMobile();
@@ -1061,8 +1765,6 @@ function initScrollytelling() {
     }, 250);
     
     window.addEventListener('resize', handleResize);
-    
-    // Ensure we start at the top on page load/refresh
     window.scrollTo(0, 0);
 }
 
@@ -1084,52 +1786,15 @@ function initializeMap() {
         antialias: true,
         fadeDuration: 300
     });
-    // STATE.map.on('load', () => {
-    //     // Soft ocean tint (balanced light/dark)
-    //     STATE.map.addLayer({
-    //       id: 'ocean-tint',
-    //       type: 'background',
-    //       paint: {
-    //         'background-color': '#244B5A',
-    //         'background-opacity': 0.1
-    //       }
-    //     });
-      
-    //     // Smooth atmosphere without stars
-    //     STATE.map.setFog({
-    //       range: [0.5, 10],
-    //       color: 'rgba(80, 130, 150, 0.25)',      // gentle aqua tone
-    //       'high-color': 'rgba(180, 220, 235, 0.1)', // soft fade near horizon
-    //       'space-color': 'rgba(5, 10, 20, 1)',      // deep backdrop
-    //       'star-intensity': 0                      // ✨ disables stars
-    //     });
-      
-    //     // Optional: refine sky to remove visible sparkle or glare
-    //     STATE.map.addLayer({
-    //       id: 'sky',
-    //       type: 'sky',
-    //       paint: {
-    //         'sky-type': 'atmosphere',
-    //         'sky-atmosphere-color': 'rgba(120, 170, 190, 0.4)', // subtle blue
-    //         'sky-atmosphere-halo-color': 'rgba(255, 255, 255, 0.05)',
-    //         'sky-opacity': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 1]
-    //       }
-    //     });
-    //   });
-      
-      
     
-    // Error handling
     STATE.map.on('error', (e) => {
         console.error('Mapbox error:', e);
         setTimeout(() => STATE.map.resize(), 100);
     });
     
-    // Map load handler
     STATE.map.on('load', async () => {
         console.log('✓ Map loaded successfully');
         
-        // Add fog for depth (professional touch)
         STATE.map.setFog({
             range: [0.5, 10],
             color: '#0a1628',
@@ -1139,13 +1804,9 @@ function initializeMap() {
             'star-intensity': 0.15
         });
         
-        // Resize to ensure proper rendering
-        setTimeout(() => STATE.map.resize(), 100);
+        STATE.map.resize();
+        initMiniMap();
         
-        // Initialize mini map
-        setTimeout(() => initMiniMap(), 300);
-        
-        // Add controls (subtle positioning)
         STATE.map.addControl(
             new mapboxgl.NavigationControl({
                 showCompass: false,
@@ -1169,29 +1830,35 @@ function initializeMap() {
             .setLngLat([28.64057, 59.93024666666667])
             .addTo(STATE.map);
         
-        const vessel2El = createRingMarker('#ff3366', 24);
+        const vessel2El = createRingMarker('#eff379', 24);
         STATE.vessel2Marker = new mapboxgl.Marker(vessel2El)
             .setLngLat([-75.57254, 20.79897])
             .addTo(STATE.map);
         STATE.vessel2Marker.getElement().style.display = 'none';
         
-        console.log('✓ Vessel markers created');
+        const vessel3El = createRingMarker('#ff6b9d', 24);
+        STATE.vessel3Marker = new mapboxgl.Marker(vessel3El)
+            .setLngLat([-75.50825714631313, 20.824164958514658])
+            .addTo(STATE.map);
+        STATE.vessel3Marker.getElement().style.display = 'none';
         
-        // Load all chapter data
+        console.log('✓ Vessel markers created (3 vessels)');
+        
         const dataLoaded = await loadChapterData();
         
         if (dataLoaded) {
-            // Pre-load all layers for smooth transitions
             for (let i = 1; i <= 5; i++) {
                 addLayerToMap(i);
             }
             
-            // Add vessel2 source and layers
             if (STATE.vessel2Data) {
                 addVessel2Layers();
             }
             
-            // Add destination marker
+            if (STATE.chapter7AkademikData && STATE.chapter7EqualityData) {
+                addChapter7Layers();
+            }
+            
             if (STATE.chapterData[5]) {
                 const finalCoords = STATE.chapterData[5].features[0].geometry.coordinates;
                 const destinationCoord = finalCoords[finalCoords.length - 1];
@@ -1227,7 +1894,6 @@ function initializeMap() {
             STATE.layersReady = true;
             console.log('✓ All layers pre-loaded for smooth transitions');
             
-            // Initialize scrollytelling
             initScrollytelling();
         } else {
             console.warn('⚠ Some data files missing, initializing with available data');
@@ -1237,10 +1903,9 @@ function initializeMap() {
 }
 
 // ============================================================================
-// PAGE LOAD HANDLING - Ensure fresh start on refresh
+// PAGE LOAD HANDLING
 // ============================================================================
 
-// Force scroll to top on page load/refresh
 if (history.scrollRestoration) {
     history.scrollRestoration = 'manual';
 }
@@ -1258,14 +1923,13 @@ window.addEventListener('load', () => {
 // STARTUP
 // ============================================================================
 
-console.log('╔═══════════════════════════════════════════╗');
-console.log('║  THEIA MARITIME INTELLIGENCE            ║');
-console.log('║  AKADEMIK GUBKIN Tracker v3.0           ║');
-console.log('║  Professional Scrollytelling Experience  ║');
-console.log('╚═══════════════════════════════════════════╝');
+console.log('╔═══════════════════════════════════════════════╗');
+console.log('║  THEIA MARITIME INTELLIGENCE                  ║');
+console.log('║  AKADEMIK GUBKIN Tracker v4.1 FIXED          ║');
+console.log('║  Professional Scrollytelling Experience       ║');
+console.log('╚═══════════════════════════════════════════════╝');
 console.log('');
 console.log('Initializing professional maritime tracking experience...');
 console.log('');
 
-// Initialize the application
 initializeMap();

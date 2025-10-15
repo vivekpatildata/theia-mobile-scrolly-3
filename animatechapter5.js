@@ -1,6 +1,7 @@
 // Chapter 5 Animation - Re-animates Chapter 4 path (slower)
 // Shows Chapter 4 path (static) + re-animates it slower for emphasis
 // Mobile-optimized and production-ready
+// COMPREHENSIVE CLEANUP - Prevents residue from other chapters
 
 function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
     const settings = {
@@ -31,23 +32,88 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
     let progressIndex = 0;
     let startTime = null;
     let isPaused = false;
+    let isStopped = false; // NEW: Track if animation is stopped
     let chapter5CleanupCallbacks = [];
+    let fadeInterval = null; // NEW: Track fade interval
+    let delayTimeouts = []; // NEW: Track all timeouts
     
-    // Hide any pre-loaded chapter5 layers
-    if (map.getLayer('chapter5-layer')) {
-        map.setPaintProperty('chapter5-layer', 'line-opacity', 0);
-    }
-    if (map.getLayer('chapter5-glow')) {
-        map.setPaintProperty('chapter5-glow', 'line-opacity', 0);
-    }
+    console.log('🎬 Chapter 5: Starting Atlantic Crossing animation');
     
-    // Cleanup function
+    // COMPREHENSIVE CLEANUP - Prevents residue from Chapter 6 and other chapters
     const cleanup = () => {
+        console.log('🧹 Chapter 5: Comprehensive cleanup starting...');
+        
+        // CRITICAL: Stop all activity immediately
+        isStopped = true;
+        
+        // CRITICAL: Clear ALL timeouts immediately
+        delayTimeouts.forEach(timeout => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+        });
+        delayTimeouts = [];
+        console.log('  ✓ All timeouts cleared');
+        
+        // Stop animation
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
         }
         
+        // Stop fade interval
+        if (fadeInterval) {
+            clearInterval(fadeInterval);
+            fadeInterval = null;
+        }
+        
+        // AGGRESSIVE POPUP REMOVAL - Remove ALL popups from previous chapters
+        const popups = document.querySelectorAll('.mapboxgl-popup');
+        popups.forEach(popup => {
+            console.log('🗑️ Removing lingering popup from previous chapter');
+            popup.remove();
+        });
+        
+        // FORCE remove ALL Chapter 6 popups and elements
+        document.querySelectorAll('.chapter6-popup').forEach(el => {
+            el.remove();
+            console.log('  ✓ Force removed chapter6 popup');
+        });
+        
+        // Remove Chapter 6 specific elements
+        document.querySelectorAll('.chapter6-detection-marker').forEach(el => el.remove());
+        document.querySelectorAll('.sts-transfer-zone').forEach(el => el.remove());
+        document.querySelectorAll('[class*="chapter6"]').forEach(el => {
+            if (!el.id || el.id !== 'chapter6-styles') {
+                el.remove();
+            }
+        });
+        
+        // Remove any satellite detection markers from previous chapters
+        document.querySelectorAll('[class*="satellite"]').forEach(el => el.remove());
+        document.querySelectorAll('[class*="detection"]').forEach(el => el.remove());
+        
+        // Clean up any animation-specific elements from previous chapters
+        document.querySelectorAll('[class*="drift"]').forEach(el => el.remove());
+        document.querySelectorAll('[class*="sts"]').forEach(el => el.remove());
+        
+        // CRITICAL: Remove any elements with position fixed/absolute from previous chapters
+        document.querySelectorAll('[style*="position: fixed"], [style*="position: absolute"]').forEach(el => {
+            // Don't remove UI elements
+            if (!el.closest('#vesselInfoPanel') && 
+                !el.closest('#datetimeDisplay') && 
+                !el.closest('#miniMapContainer') &&
+                !el.closest('.story-progress') &&
+                !el.closest('.logo-container') &&
+                !el.closest('.legend-bar') &&
+                !el.closest('.mapboxgl-marker') &&
+                el.closest('#map')) { // Only elements inside map
+                console.log('🗑️ Removing lingering positioned element from previous chapter');
+                el.remove();
+            }
+        });
+        
+        // Run all registered cleanup callbacks
         chapter5CleanupCallbacks.forEach(callback => {
             try {
                 callback();
@@ -59,13 +125,45 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
         
         // Remove all chapter 5 layers
         [chapter4GlowId, chapter4LayerId, chapter5GlowId, chapter5LayerId].forEach(id => {
-            if (map.getLayer(id)) map.removeLayer(id);
+            if (map.getLayer(id)) {
+                try {
+                    map.removeLayer(id);
+                } catch (e) {
+                    console.warn(`Error removing layer ${id}:`, e);
+                }
+            }
         });
         
         // Remove sources
-        if (map.getSource(chapter4SourceId)) map.removeSource(chapter4SourceId);
-        if (map.getSource(chapter5SourceId)) map.removeSource(chapter5SourceId);
+        if (map.getSource(chapter4SourceId)) {
+            try {
+                map.removeSource(chapter4SourceId);
+            } catch (e) {
+                console.warn(`Error removing source ${chapter4SourceId}:`, e);
+            }
+        }
+        if (map.getSource(chapter5SourceId)) {
+            try {
+                map.removeSource(chapter5SourceId);
+            } catch (e) {
+                console.warn(`Error removing source ${chapter5SourceId}:`, e);
+            }
+        }
+        
+        // Clear state
+        progressIndex = 0;
+        startTime = null;
+        
+        console.log('✅ Chapter 5: Cleanup complete');
     };
+    
+    // Hide any pre-loaded chapter5 layers
+    if (map.getLayer('chapter5-layer')) {
+        map.setPaintProperty('chapter5-layer', 'line-opacity', 0);
+    }
+    if (map.getLayer('chapter5-glow')) {
+        map.setPaintProperty('chapter5-glow', 'line-opacity', 0);
+    }
     
     // Add Chapter 4 path (static, dimmer background)
     map.addSource(chapter4SourceId, {
@@ -150,11 +248,19 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
     // Fade in both paths
     let opacity = 0;
     const fadeSteps = 18;
-    const fadeInterval = setInterval(() => {
+    fadeInterval = setInterval(() => {
+        // Check if stopped
+        if (isStopped) {
+            clearInterval(fadeInterval);
+            fadeInterval = null;
+            return;
+        }
+        
         opacity += 0.05;
         if (opacity >= 0.9) {
             opacity = 0.9;
             clearInterval(fadeInterval);
+            fadeInterval = null;
         }
         
         // Chapter 4 (background) fades in dimmer
@@ -175,18 +281,28 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
     }, settings.fadeInDuration / fadeSteps);
     
     chapter5CleanupCallbacks.push(() => {
-        clearInterval(fadeInterval);
+        if (fadeInterval) clearInterval(fadeInterval);
     });
     
     // Start animation (slower)
-    setTimeout(() => {
+    const startTimeout = setTimeout(() => {
+        // Check if stopped before starting
+        if (isStopped) return;
+        
         startTime = performance.now();
         animateTrack();
     }, settings.fadeInDuration);
     
+    delayTimeouts.push(startTimeout);
+    
+    chapter5CleanupCallbacks.push(() => {
+        clearTimeout(startTimeout);
+    });
+    
     // Main animation function
     function animateTrack() {
-        if (isPaused) return;
+        // Check if stopped
+        if (isPaused || isStopped) return;
         
         const currentTime = performance.now();
         const elapsed = currentTime - startTime;
@@ -219,13 +335,14 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
             if (map.getSource(chapter5SourceId)) {
                 map.getSource(chapter5SourceId).setData(progressGeojson);
             }
+            console.log('✅ Chapter 5: Animation complete');
         }
     }
     
     return {
         pause: () => { isPaused = true; },
         resume: () => {
-            if (progressIndex >= totalPoints - 1) return;
+            if (progressIndex >= totalPoints - 1 || isStopped) return;
             isPaused = false;
             startTime = performance.now() - (progressIndex / totalPoints) * settings.animationDuration;
             animateTrack();
@@ -236,6 +353,7 @@ function animateChapter5(map, chapter4Data, vesselMarker, config = {}) {
             animateChapter5(map, chapter4Data, vesselMarker, config);
         },
         setSpeed: (speed) => {
+            if (isStopped) return;
             const newDuration = 4500 / speed;
             const currentProgress = progressIndex / totalPoints;
             settings.animationDuration = newDuration;

@@ -163,22 +163,9 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
                 border-radius: 4px;
             }
             
-            /* Optional: Metadata overlay on images */
+            /* Optional: Container styling */
             .chapter3-popup .enhanced-popup {
                 position: relative;
-            }
-            
-            .chapter3-popup .sat-metadata {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(10, 22, 40, 0.9);
-                padding: 5px 8px;
-                font-size: 9px;
-                color: #4a9eff;
-                font-family: monospace;
-                border-top: 1px solid rgba(74, 158, 255, 0.3);
             }
             
             /* ============================================
@@ -204,11 +191,6 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
                     width: 28px;
                     height: 28px;
                 }
-                
-                .chapter3-popup .sat-metadata {
-                    font-size: 8px;
-                    padding: 4px 6px;
-                }
             }
             
             /* ============================================
@@ -233,11 +215,6 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
                 .sat-marker-ring {
                     width: 24px;
                     height: 24px;
-                }
-                
-                .chapter3-popup .sat-metadata {
-                    font-size: 7px;
-                    padding: 3px 5px;
                 }
             }
             
@@ -285,11 +262,6 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
                 .sat-marker-ring {
                     width: 32px;
                     height: 32px;
-                }
-                
-                .chapter3-popup .sat-metadata {
-                    font-size: 9px;
-                    padding: 5px 8px;
                 }
             }
             
@@ -367,11 +339,10 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
         
         // Add popup after brief delay (following successful pattern)
         setTimeout(() => {
-            // Create simple popup HTML matching successful chapters
+            // Create clean popup HTML - IMAGE ONLY, NO LABELS
             const popupHtml = `
                 <div class="enhanced-popup">
                     <img src="${point.image}" class="annotation-img" alt="${point.label}">
-                    <div class="sat-metadata">${point.label} • ${point.coords[1].toFixed(4)}°N ${point.coords[0].toFixed(4)}°E</div>
                 </div>
             `;
             

@@ -62,12 +62,14 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
     let progressIndex = 0;
     let startTime = null;
     let isPaused = false;
+    let isStopped = false; // NEW: Track if animation is stopped
     let chapter6CleanupCallbacks = [];
     let detectionMarkers = [];
     let detectionPopups = [];
     let shownDetections = new Set();
     let stsMarker = null;
     let fadeInterval = null;
+    let popupTimeouts = []; // NEW: Track all popup delay timeouts
     
     console.log('🎬 Chapter 6: Starting Haiti STS animation (fast mode)');
     
@@ -252,29 +254,6 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
                 position: relative;
             }
             
-            .chapter6-popup .sat-metadata {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 5px 8px;
-                font-size: 9px;
-                font-family: monospace;
-                border-top: 1px solid;
-            }
-            
-            .chapter6-popup.blue-glow .sat-metadata {
-                background: rgba(10, 22, 40, 0.9);
-                color: #4a9eff;
-                border-top-color: rgba(74, 158, 255, 0.3);
-            }
-            
-            .chapter6-popup.red-glow .sat-metadata {
-                background: rgba(40, 10, 10, 0.9);
-                color: #ff6666;
-                border-top-color: rgba(204, 0, 0, 0.3);
-            }
-            
             @media screen and (max-width: 768px) {
                 .chapter6-popup .enhanced-popup .annotation-img {
                     width: 145px !important;
@@ -319,6 +298,18 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
     const cleanup = () => {
         console.log('🧹 Chapter 6: Comprehensive cleanup starting...');
         
+        // CRITICAL: Stop all activity immediately
+        isStopped = true;
+        
+        // CRITICAL: Clear ALL popup delay timeouts immediately
+        popupTimeouts.forEach(timeout => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+        });
+        popupTimeouts = [];
+        console.log('  ✓ All popup timeouts cleared');
+        
         // Stop animation
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
@@ -331,6 +322,34 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
             fadeInterval = null;
         }
         
+        // Remove all popups from state
+        detectionPopups.forEach(popup => {
+            try {
+                popup.remove();
+            } catch (e) {
+                console.warn('Error removing popup:', e);
+            }
+        });
+        detectionPopups = [];
+        
+        // FORCE remove ALL Chapter 6 popups from DOM
+        document.querySelectorAll('.chapter6-popup').forEach(el => {
+            el.remove();
+            console.log('  ✓ Force removed chapter6 popup from DOM');
+        });
+        
+        // FORCE remove ALL mapbox popups that might be lingering
+        document.querySelectorAll('.mapboxgl-popup').forEach(popup => {
+            // Only remove if it's a chapter6 popup
+            if (popup.classList.contains('chapter6-popup') || 
+                popup.classList.contains('blue-glow') ||
+                popup.classList.contains('red-glow') ||
+                popup.querySelector('.enhanced-popup')) {
+                popup.remove();
+                console.log('  ✓ Force removed mapbox popup');
+            }
+        });
+        
         // Remove all detection markers
         detectionMarkers.forEach(({ marker }) => {
             try {
@@ -340,16 +359,6 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
             }
         });
         detectionMarkers = [];
-        
-        // Remove all popups
-        detectionPopups.forEach(popup => {
-            try {
-                popup.remove();
-            } catch (e) {
-                console.warn('Error removing popup:', e);
-            }
-        });
-        detectionPopups = [];
         
         // Remove STS marker
         if (stsMarker) {
@@ -393,7 +402,6 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
         
         // Remove all chapter6 DOM elements
         document.querySelectorAll('.chapter6-detection-marker').forEach(el => el.remove());
-        document.querySelectorAll('.chapter6-popup').forEach(el => el.remove());
         document.querySelectorAll('.sts-transfer-zone').forEach(el => el.remove());
         document.querySelectorAll('[class*="chapter6"]').forEach(el => {
             if (!el.id || el.id !== 'chapter6-styles') {
@@ -446,7 +454,7 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
     
     createSatelliteMarkers();
     
-    // Show detection with popup (faster)
+    // Show detection with popup (faster) - IMAGE ONLY, NO LABELS
     function showDetection(index) {
         if (shownDetections.has(index)) return;
         shownDetections.add(index);
@@ -462,7 +470,6 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
             const popupHtml = `
                 <div class="enhanced-popup">
                     <img src="${point.image}" class="annotation-img" alt="${point.label}">
-                    <div class="sat-metadata">${point.label} • ${point.coords[1].toFixed(4)}°N ${Math.abs(point.coords[0]).toFixed(4)}°W</div>
                 </div>
             `;
             

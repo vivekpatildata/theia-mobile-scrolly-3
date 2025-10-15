@@ -186,19 +186,20 @@ body {
     transform: scale(1.05);
 }
 
-/* Mini World Map */
+/* Mini World Map - FIXED SPACING */
 .mini-map-container {
     position: fixed;
     top: 70px;
     right: 12px;
     z-index: 102;
     width: 170px;
-    height: 110px;
+    height: 160px;
+    margin-bottom: 15px;
 }
 
 #miniMap {
     width: 170px;
-    height: 90px;
+    height: 130px;
     background: var(--gradient-card);
     border: 1px solid rgba(0, 153, 255, 0.25);
     border-radius: 10px;
@@ -230,10 +231,10 @@ body {
                  0 0 30px rgba(0, 153, 255, 0.4);
 }
 
-/* Vessel Info Panel */
+/* Vessel Info Panel - ADJUSTED TOP POSITION */
 .vessel-info-panel {
     position: fixed;
-    top: 185px;
+    top: 245px;
     right: 12px;
     z-index: 100;
     background: var(--gradient-card);
@@ -319,6 +320,11 @@ body {
     box-shadow: 0 0 6px #ff3366;
 }
 
+.vessel-3-indicator {
+    background: #ff6b9d;
+    box-shadow: 0 0 6px #ff6b9d;
+}
+
 /* Scrolly Container */
 #scrolly {
     position: relative;
@@ -344,7 +350,10 @@ body {
     transform: translateY(0) scale(1);
 }
 
-/* Cards */
+/* ========================================
+   CARDS - TRIMMED EDGES, ORIGINAL FONTS +1PT
+   🔧 ADJUST PADDING HERE TO TRIM MORE
+   ======================================== */
 .card {
     background: linear-gradient(145deg, 
                 rgba(26, 39, 68, 0.94) 0%, 
@@ -353,8 +362,8 @@ body {
     backdrop-filter: blur(30px) saturate(120%);
     border: 1px solid rgba(0, 153, 255, 0.2);
     border-radius: 14px;
-    padding: 16px 16px;
-    max-width: 340px;
+    padding: 12px 12px;  /* 🔧 REDUCED from 16px - Trim MORE by reducing this */
+    max-width: 272px;  /* 20% smaller from 340px */
     width: calc(100% - 40px);
     margin: 0 auto;
     opacity: 0;
@@ -367,6 +376,7 @@ body {
     position: relative;
     overflow: hidden;
 }
+
 
 .card::before {
     content: '';
@@ -382,22 +392,12 @@ body {
     opacity: 0.6;
 }
 
-/* Card Alignment Classes */
-.card.align-left {
-    margin: 0 auto 0 20px;
-}
-
-.card.align-center {
-    margin: 0 auto;
-}
-
-.card.align-right {
-    margin: 0 20px 0 auto;
-}
+/* REMOVED: Card alignment classes - now handled inline in HTML
+   Each chapter has individual alignment via inline styles */
 
 .intro-card {
     text-align: center;
-    padding: 24px 18px;
+    padding: 18px 14px;  /* 🔧 REDUCED from 24px 18px */
     background: linear-gradient(145deg,
                 rgba(0, 51, 204, 0.12) 0%,
                 rgba(26, 39, 68, 0.95) 30%,
@@ -405,14 +405,14 @@ body {
 }
 
 .intro-logo {
-    margin-bottom: 28px;
+    margin-bottom: 20px;  /* 🔧 REDUCED from 28px */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .intro-logo-img {
-    height: 45px;
+    height: 36px;
     width: auto;
     filter: drop-shadow(0 4px 20px rgba(0, 153, 255, 0.3));
     animation: logoGlow 3s ease-in-out infinite;
@@ -431,17 +431,21 @@ body {
     display: inline-block;
     background: var(--gradient-primary);
     color: white;
-    padding: 8px 16px;
+    padding: 6px 12px;  /* 🔧 REDUCED from 8px 16px */
     border-radius: 24px;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.5px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;  /* 🔧 REDUCED from 24px */
     box-shadow: 0 4px 20px rgba(0, 153, 255, 0.4);
 }
 
+/* ========================================
+   FONT SIZES - ORIGINAL +1PT
+   🔧 ADJUST THESE TO CHANGE FONT SIZE
+   ======================================== */
 h1 {
-    font-size: 34px;
+    font-size: 35px;  /* 🔧 Was 34px, now +1pt = 35px */
     font-weight: 800;
     background: linear-gradient(180deg, 
                 var(--blue-50) 0%, 
@@ -450,31 +454,31 @@ h1 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 10px;
+    margin-bottom: 8px;  /* 🔧 REDUCED from 10px */
     line-height: 1.05;
     letter-spacing: -1px;
 }
 
 h2 {
-    font-size: 14px;
+    font-size: 15px;  /* 🔧 Was 14px, now +1pt = 15px */
     font-weight: 400;
     color: var(--blue-300);
-    margin-bottom: 16px;
+    margin-bottom: 12px;  /* 🔧 REDUCED from 16px */
     letter-spacing: -0.2px;
     line-height: 1.4;
 }
 
 h3 {
-    font-size: 19px;
+    font-size: 20px;  /* 🔧 Was 19px, now +1pt = 20px */
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 10px;  /* 🔧 REDUCED from 12px */
     color: var(--blue-50);
     letter-spacing: -0.5px;
     line-height: 1.3;
 }
 
 p {
-    font-size: 12px;
+    font-size: 13px;  /* 🔧 Was 12px, now +1pt = 13px */
     line-height: 1.5;
     color: var(--blue-200);
     font-weight: 400;
@@ -486,17 +490,17 @@ strong {
 }
 
 .divider {
-    width: 35px;
+    width: 28px;
     height: 2px;
     background: var(--gradient-primary);
-    margin: 14px auto;
+    margin: 10px auto;  /* 🔧 REDUCED from 14px */
     border-radius: 2px;
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 10px;  /* 🔧 REDUCED from 12px */
     font-size: 8px;
     font-weight: 700;
     color: var(--blue-400);
@@ -521,19 +525,19 @@ strong {
                 rgba(0, 102, 255, 0.12) 100%);
     border: 1px solid rgba(0, 153, 255, 0.25);
     border-radius: 10px;
-    padding: 12px 14px;
-    margin-top: 14px;
+    padding: 10px 12px;  /* 🔧 REDUCED from 12px 14px */
+    margin-top: 12px;    /* 🔧 REDUCED from 14px */
 }
 
 .data-point .label {
-    font-size: 9px;
+    font-size: 10px;  /* 🔧 Was 9px, now +1pt = 10px */
     font-weight: 600;
     color: var(--blue-300);
     letter-spacing: 0.7px;
 }
 
 .data-point .value {
-    font-size: 18px;
+    font-size: 19px;  /* 🔧 Was 18px, now +1pt = 19px */
     font-weight: 700;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -543,13 +547,13 @@ strong {
 
 /* Timeline */
 .timeline {
-    margin-top: 14px;
+    margin-top: 12px;  /* 🔧 REDUCED from 14px */
 }
 
 .timeline-item {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 6px 0;  /* 🔧 REDUCED from 8px */
     border-bottom: 1px solid rgba(0, 153, 255, 0.08);
 }
 
@@ -558,13 +562,13 @@ strong {
 }
 
 .timeline-item .time {
-    font-size: 10px;
+    font-size: 11px;  /* 🔧 Was 10px, now +1pt = 11px */
     font-weight: 600;
     color: var(--blue-400);
 }
 
 .timeline-item .event {
-    font-size: 10px;
+    font-size: 11px;  /* 🔧 Was 10px, now +1pt = 11px */
     font-weight: 500;
     color: var(--blue-100);
 }
@@ -575,16 +579,16 @@ strong {
                 rgba(0, 0, 0, 0.3) 0%,
                 rgba(0, 22, 40, 0.4) 100%);
     border-radius: 10px;
-    padding: 12px;
-    margin-top: 14px;
+    padding: 10px;      /* 🔧 REDUCED from 12px */
+    margin-top: 12px;   /* 🔧 REDUCED from 14px */
     border: 1px solid rgba(0, 153, 255, 0.1);
 }
 
 .status-row {
     display: flex;
     justify-content: space-between;
-    padding: 7px 0;
-    font-size: 11px;
+    padding: 6px 0;     /* 🔧 REDUCED from 7px */
+    font-size: 12px;    /* 🔧 Was 11px, now +1pt = 12px */
     border-bottom: 1px solid rgba(0, 153, 255, 0.05);
 }
 
@@ -605,12 +609,12 @@ strong {
 /* Badges */
 .sar-badge, .alert-badge, .live-badge {
     display: inline-block;
-    padding: 6px 12px;
+    padding: 5px 10px;  /* 🔧 REDUCED from 6px 12px */
     border-radius: 16px;
-    font-size: 8px;
+    font-size: 9px;     /* 🔧 Was 8px, now +1pt = 9px */
     font-weight: 700;
     letter-spacing: 0.7px;
-    margin-top: 14px;
+    margin-top: 12px;   /* 🔧 REDUCED from 14px */
 }
 
 .sar-badge {
@@ -656,7 +660,7 @@ strong {
 /* Legend Bar */
 .legend-bar {
     position: fixed;
-    bottom: 20px;
+    bottom: 70px;
     left: 20px;
     background: var(--gradient-card);
     backdrop-filter: blur(20px);
@@ -698,17 +702,22 @@ strong {
     box-shadow: 0 0 12px #ff3366;
 }
 
+.legend-dot.vessel3 {
+    background: #ff6b9d;
+    box-shadow: 0 0 12px #ff6b9d;
+}
+
 /* Sanctions Notice */
 .sanctions-notice {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;           /* 🔧 REDUCED from 6px */
     background: linear-gradient(135deg, rgba(255, 51, 102, 0.1) 0%, rgba(255, 51, 102, 0.05) 100%);
     border: 1px solid rgba(255, 51, 102, 0.3);
     border-radius: 10px;
-    padding: 8px;
-    margin-top: 14px;
-    font-size: 10px;
+    padding: 6px;       /* 🔧 REDUCED from 8px */
+    margin-top: 12px;   /* 🔧 REDUCED from 14px */
+    font-size: 11px;    /* 🔧 Was 10px, now +1pt = 11px */
     font-weight: 600;
     color: var(--danger);
 }
@@ -719,11 +728,11 @@ strong {
 
 /* Scroll Indicator */
 .scroll-indicator {
-    margin-top: 36px;
+    margin-top: 28px;   /* 🔧 REDUCED from 36px */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;           /* 🔧 REDUCED from 10px */
     color: var(--blue-400);
 }
 
@@ -745,13 +754,13 @@ strong {
 /* Findings List */
 .findings {
     list-style: none;
-    margin: 20px 0;
+    margin: 16px 0;     /* 🔧 REDUCED from 20px */
 }
 
 .findings li {
-    padding: 12px 0 12px 24px;
+    padding: 10px 0 10px 20px;  /* 🔧 REDUCED from 12px 0 12px 24px */
     position: relative;
-    font-size: 13px;
+    font-size: 14px;    /* 🔧 Was 13px, now +1pt = 14px */
     color: var(--blue-200);
     line-height: 1.6;
     border-bottom: 1px solid rgba(0, 153, 255, 0.05);
@@ -771,19 +780,19 @@ strong {
 /* CTA */
 .cta {
     text-align: center;
-    margin-top: 28px;
-    padding-top: 24px;
+    margin-top: 22px;   /* 🔧 REDUCED from 28px */
+    padding-top: 18px;  /* 🔧 REDUCED from 24px */
     border-top: 1px solid rgba(0, 153, 255, 0.1);
 }
 
 .cta p {
-    font-size: 11px;
+    font-size: 12px;    /* 🔧 Was 11px, now +1pt = 12px */
     color: var(--blue-400);
-    margin-bottom: 10px;
+    margin-bottom: 8px; /* 🔧 REDUCED from 10px */
 }
 
 .cta strong {
-    font-size: 15px;
+    font-size: 16px;    /* 🔧 Was 15px, now +1pt = 16px */
     font-weight: 800;
     background: linear-gradient(90deg, 
                 var(--accent-cyan) 0%, 
@@ -934,7 +943,7 @@ strong {
     
     .legend-bar {
         left: 12px;
-        bottom: 15px;
+        bottom: 35px;
         padding: 8px 12px;
         gap: 8px;
     }
@@ -949,6 +958,10 @@ strong {
     
     h1 { font-size: 30px; }
     h3 { font-size: 17px; }
+    
+    .vessel-info-panel {
+        top: 230px;
+    }
 }
 
 /* Mobile Landscape - 600px */
@@ -956,16 +969,17 @@ strong {
     .vessel-info-panel {
         width: 130px;
         padding: 9px 10px;
+        top: 220px;
     }
     
     .mini-map-container {
         width: 150px;
-        height: 100px;
+        height: 140px;
     }
     
     #miniMap {
         width: 150px;
-        height: 80px;
+        height: 110px;
         overflow: hidden;
     }
 }
@@ -1026,6 +1040,10 @@ strong {
     h2 { font-size: 13px; }
     h3 { font-size: 16px; }
     p { font-size: 11px; }
+    
+    .vessel-info-panel {
+        top: 210px;
+    }
 }
 
 /* Small Mobile - 380px */
@@ -1091,12 +1109,12 @@ strong {
     .mini-map-container {
         right: 10px;
         width: 140px;
-        height: 95px;
+        height: 130px;
     }
     
     #miniMap {
         width: 140px;
-        height: 75px;
+        height: 100px;
         overflow: hidden;
     }
     
@@ -1104,7 +1122,7 @@ strong {
         right: 10px;
         width: 120px;
         padding: 8px 10px;
-        top: 170px;
+        top: 195px;
     }
     
     .info-label {
@@ -1121,7 +1139,7 @@ strong {
     
     .legend-bar {
         left: 10px;
-        bottom: 12px;
+        bottom: 25px;
         gap: 8px;
         padding: 7px 10px;
     }
