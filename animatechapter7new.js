@@ -12,9 +12,9 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
     // ============================================================================
     
     const settings = {
-        animationDuration: config.duration || 6000, // 6 seconds total - ORIGINAL
-        akademikDuration: config.akademikDuration || 5000, // ORIGINAL
-        equalityDuration: config.equalityDuration || 6000, // ORIGINAL
+        animationDuration: config.duration || 3000, // 6 seconds total - ORIGINAL
+        akademikDuration: config.akademikDuration || 3000, // ORIGINAL
+        equalityDuration: config.equalityDuration || 3000, // ORIGINAL
         vessel1Color: config.vessel1Color || '#00ff88',
         vessel3Color: config.vessel3Color || '#ff6b9d',
         lineWidth: config.lineWidth || 3,
@@ -46,7 +46,7 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
         coords: stsLocation,
         label: 'DARK STS OPERATION',
         image: 'image3A.png', // Placeholder satellite image
-        popupOffset: [120, -50],
+        popupOffset: [0, 230],
         markerColor: '#cc0000',
         glowColor: '#cc0000',
         isDark: true

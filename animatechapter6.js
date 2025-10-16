@@ -33,10 +33,10 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
     // Satellite detection points
     const detectionPoints = [
         {
-            coords: [-75.5575, 20.7816],
+            coords: [-75.5608, 20.7831],
             label: 'LIGHT DETECTION',
             image: 'image2A.png',
-            popupOffset: [20, -50],
+            popupOffset: [120, 150],
             markerColor: '#4a9eff',
             glowColor: '#4a9eff'
         },
@@ -44,7 +44,7 @@ function animateChapter6(map, chapter4Data, chapter5Data, vessel2Data, vesselMar
             coords: [-75.5948, 20.7992],
             label: 'STS TRANSFER',
             image: 'image2B.png',
-            popupOffset: [-20, -50],
+            popupOffset: [0, -30],
             markerColor: '#cc0000',
             glowColor: '#cc0000',
             isSTS: true

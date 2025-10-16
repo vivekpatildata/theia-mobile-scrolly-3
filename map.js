@@ -103,8 +103,8 @@ const CHAPTERS = {
     },
     3: {
         name: 'North Sea Transit',
-        center: [12.73, 59.16],
-        zoom: 3.99,
+        center: [10.26, 58.9],
+        zoom: 4.2,
         pitch: 0,
         bearing: 0,
         duration: 3500,
@@ -154,8 +154,8 @@ const CHAPTERS = {
     },
     6: {
         name: 'Haiti Arrival - STS Transfer',
-        center: [-75.57254, 20.79897],
-        zoom: 13,
+        center: [-75.56706, 20.79431],
+        zoom: 12.94,
         pitch: 5,
         bearing: 2,
         duration: 3500,
@@ -171,10 +171,10 @@ const CHAPTERS = {
     },
     7: {
         name: 'Dark STS - EQUALITY',
-        center: [-74.911, 20.189],
-        zoom: 7.87,
+        center: [-75.4, 20.589],
+        zoom: 7.95,
         pitch: 1,
-        bearing: 94.5,
+        bearing: 0,
         duration: 3500,
         curve: 1.3,
         geojson: null,
@@ -703,18 +703,21 @@ function initMiniMap() {
             <div class="map-label">GLOBAL POSITION</div>
         `;
         
+        // Initialize at Chapter 1 location (first visible chapter)
+        const initialCenter = CHAPTERS[1].center; // [28.64559, 59.93183]
+        
         STATE.miniMap = new mapboxgl.Map({
             container: 'miniMap',
             style: 'mapbox://styles/mapbox/light-v11',
-            center: [0, 30],
-            zoom: 1.5,
+            center: initialCenter,
+            zoom: 2.8,
             interactive: false,
             attributionControl: false,
             logoPosition: 'bottom-right',
             preserveDrawingBuffer: true
         });
         
-        // Create HIGHLY VISIBLE marker element
+        // Create marker with CENTERED pulse ring
         const markerEl = document.createElement('div');
         markerEl.className = 'mini-map-marker';
         markerEl.style.cssText = `
@@ -726,38 +729,39 @@ function initMiniMap() {
             box-shadow: 0 0 25px rgba(0, 255, 136, 1), 
                         0 0 15px rgba(0, 255, 136, 1),
                         inset 0 0 10px rgba(0, 255, 136, 0.9);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1000;
         `;
         
-        // Add animated pulsing ring
+        // ✅ CENTERED pulse ring
         const pulseRing = document.createElement('div');
         pulseRing.style.cssText = `
             position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 36px;
-            height: 36px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             border: 3px solid #00ff88;
             opacity: 0.7;
             animation: miniMapPulse 2s ease-out infinite;
+            pointer-events: none;
         `;
         markerEl.appendChild(pulseRing);
         
-        // Add pulse animation if not exists
+        // Add pulse animation
         if (!document.getElementById('miniMapPulseAnimation')) {
             const style = document.createElement('style');
             style.id = 'miniMapPulseAnimation';
             style.textContent = `
                 @keyframes miniMapPulse {
                     0% {
-                        transform: scale(0.4);
+                        transform: translate(-50%, -50%) scale(1);
                         opacity: 0.9;
                     }
                     100% {
-                        transform: scale(1.8);
+                        transform: translate(-50%, -50%) scale(2.5);
                         opacity: 0;
                     }
                 }
@@ -765,22 +769,12 @@ function initMiniMap() {
             document.head.appendChild(style);
         }
         
-        // Create marker
+        // Create and add marker immediately
         STATE.miniMarker = new mapboxgl.Marker(markerEl)
-            .setLngLat([0, 30]);
+            .setLngLat(initialCenter)
+            .addTo(STATE.miniMap);
         
-        // Add marker immediately when map loads - NO DELAYS
-        STATE.miniMap.on('load', () => {
-            STATE.miniMarker.addTo(STATE.miniMap);
-            STATE.miniMap.resize();
-            // Force another resize after a frame to ensure proper dimensions
-            requestAnimationFrame(() => {
-                STATE.miniMap.resize();
-                console.log('✓ Mini map marker visible immediately');
-            });
-        });
-        
-        console.log('✓ Mini map initialized');
+        console.log('✓ Mini map initialized at Chapter 1 location');
     } catch (error) {
         console.error('Mini map initialization error:', error);
     }
@@ -796,27 +790,24 @@ function updateMiniMap(lng, lat) {
         // Dynamic zoom based on location
         let targetZoom = 1.5;
         
-        // Zoom in more for specific regions
-        if (Math.abs(lat) < 25 && Math.abs(lng) < 30) {
-            // Europe/Africa region
-            targetZoom = 2.8;
+        // Chapter 5 - Mid-Atlantic (zoom out more to show context)
+        if (lng < -40 && lng > -70 && lat > 15 && lat < 35) {
+            targetZoom = 1.0; // Zoom out for mid-Atlantic crossing
+        }
+        else if (Math.abs(lat) < 25 && Math.abs(lng) < 30) {
+            targetZoom = 2.8; // Europe/Africa region
         } else if (lng < -60 && Math.abs(lat) < 30) {
-            // Caribbean region
-            targetZoom = 3.2;
+            targetZoom = 3.2; // Caribbean region
         } else if (Math.abs(lng) > 140) {
-            // Pacific - zoom out
-            targetZoom = 1.2;
+            targetZoom = 1.2; // Pacific - zoom out
         } else if (Math.abs(lat) > 60) {
-            // Arctic - zoom out slightly
-            targetZoom = 1.8;
+            targetZoom = 1.8; // Arctic - zoom out slightly
         }
         
-        // Instant pan and zoom - NO DELAYS
-        STATE.miniMap.easeTo({
+        // Pan to location
+        STATE.miniMap.jumpTo({
             center: [lng, lat],
-            zoom: targetZoom,
-            duration: 300,
-            easing: t => t
+            zoom: targetZoom
         });
         
     } catch (error) {
@@ -1026,7 +1017,7 @@ function addChapter7Layers() {
                         'line-cap': 'round'
                     },
                     paint: {
-                        'line-color': '#ff6b9d',
+                        'line-color': '#ff9933',
                         'line-width': 8,
                         'line-opacity': 0,
                         'line-blur': 4
@@ -1044,7 +1035,7 @@ function addChapter7Layers() {
                         'line-cap': 'round'
                     },
                     paint: {
-                        'line-color': '#ff6b9d',
+                        'line-color': '#ff9933',
                         'line-width': 3,
                         'line-opacity': 0
                     }
@@ -1188,12 +1179,21 @@ function updateUIVisibility(show) {
     if (miniMapContainer) {
         miniMapContainer.style.display = displayValue;
         
-        // CRITICAL: Resize mini map when container becomes visible
+        // When showing mini map, resize and refresh position
         if (show && STATE.miniMap) {
-            // Use requestAnimationFrame to ensure display change has taken effect
             requestAnimationFrame(() => {
                 STATE.miniMap.resize();
-                console.log('✓ Mini map resized after container visible');
+                // Refresh marker position for current chapter
+                if (STATE.currentChapter >= 0 && CHAPTERS[STATE.currentChapter]) {
+                    const chapter = CHAPTERS[STATE.currentChapter];
+                    if (STATE.miniMarker) {
+                        STATE.miniMarker.setLngLat(chapter.center);
+                    }
+                    STATE.miniMap.jumpTo({
+                        center: chapter.center,
+                        zoom: STATE.miniMap.getZoom()
+                    });
+                }
             });
         }
         
@@ -1836,7 +1836,7 @@ function initializeMap() {
             .addTo(STATE.map);
         STATE.vessel2Marker.getElement().style.display = 'none';
         
-        const vessel3El = createRingMarker('#ff6b9d', 24);
+        const vessel3El = createRingMarker('#ff9933', 24);
         STATE.vessel3Marker = new mapboxgl.Marker(vessel3El)
             .setLngLat([-75.50825714631313, 20.824164958514658])
             .addTo(STATE.map);

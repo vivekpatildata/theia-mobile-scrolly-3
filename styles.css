@@ -199,7 +199,7 @@ body {
 
 #miniMap {
     width: 170px;
-    height: 130px;
+    height: 100px;
     background: var(--gradient-card);
     border: 1px solid rgba(0, 153, 255, 0.25);
     border-radius: 10px;
@@ -234,8 +234,8 @@ body {
 /* Vessel Info Panel - ADJUSTED TOP POSITION */
 .vessel-info-panel {
     position: fixed;
-    top: 245px;
-    right: 12px;
+    top: 260px;
+    right: 6px;
     z-index: 100;
     background: var(--gradient-card);
     backdrop-filter: blur(20px) saturate(150%);
@@ -321,8 +321,8 @@ body {
 }
 
 .vessel-3-indicator {
-    background: #ff6b9d;
-    box-shadow: 0 0 6px #ff6b9d;
+    background: #ff9933;
+    box-shadow: 0 0 6px #ff9933;
 }
 
 /* Scrolly Container */
@@ -361,9 +361,9 @@ body {
                 rgba(10, 22, 40, 0.98) 100%);
     backdrop-filter: blur(30px) saturate(120%);
     border: 1px solid rgba(0, 153, 255, 0.2);
-    border-radius: 14px;
-    padding: 12px 12px;  /* 🔧 REDUCED from 16px - Trim MORE by reducing this */
-    max-width: 272px;  /* 20% smaller from 340px */
+    border-radius: 12px;
+    padding: 8px 8px;  /* 🔧 REDUCED from 16px - Trim MORE by reducing this */
+    max-width: 270px;  /* 20% smaller from 340px */
     width: calc(100% - 40px);
     margin: 0 auto;
     opacity: 0;
@@ -703,8 +703,8 @@ strong {
 }
 
 .legend-dot.vessel3 {
-    background: #ff6b9d;
-    box-shadow: 0 0 12px #ff6b9d;
+    background: #ff9933;
+    box-shadow: 0 0 12px #ff9933;
 }
 
 /* Sanctions Notice */
