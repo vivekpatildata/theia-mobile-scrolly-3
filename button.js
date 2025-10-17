@@ -5,8 +5,8 @@
   
     // Button configuration
     const buttonConfig = {
-      text: 'Explore SynMax Theia',
-      url: 'https://www.synmax.com/theia/', // Replace with your actual platform URL
+      text: 'Reach out',
+      url: 'https://www.synmax.com/contact-us/?hsCtaAttrib=185462734695', // Replace with your actual platform URL
       trackingEvent: 'theia_platform_cta', // For analytics
       animationDelay: 500 // Delay before button appears
     };
