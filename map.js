@@ -65,7 +65,8 @@ const CHAPTERS = {
         showLegend: false,
         showVessel2: false,
         showVessel3: false,
-        showUI: false
+        showUI: false,
+        voyagePeriod: 'APR 5 - AUG 31'  // 🔧 EDIT YOUR DATE HERE
     },
     1: {
         name: 'Ust-Luga Loading',
@@ -82,7 +83,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'APR 5 - AUG 31'  // 🔧 EDIT YOUR DATE HERE
     },
     2: {
         name: 'Baltic Exit',
@@ -99,7 +101,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'AUG 31'  // 🔧 EDIT YOUR DATE HERE
     },
     3: {
         name: 'North Sea Transit',
@@ -116,7 +119,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'SEP 2 - SEP 6'  // 🔧 EDIT YOUR DATE HERE
     },
     4: {
         name: 'Norwegian Sea to Atlantic',
@@ -133,7 +137,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'SEP 7 - SEP 8'  // 🔧 EDIT YOUR DATE HERE
     },
     5: {
         name: 'Mid-Atlantic to Haiti',
@@ -150,7 +155,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'SEP 9 - SEP 25'  // 🔧 EDIT YOUR DATE HERE
     },
     6: {
         name: 'Haiti Arrival - STS Transfer',
@@ -167,7 +173,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: true,
         showVessel3: false,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'SEP 25 - OCT 2'  // 🔧 EDIT YOUR DATE HERE
     },
     7: {
         name: 'Dark STS - EQUALITY',
@@ -184,7 +191,8 @@ const CHAPTERS = {
         showLegend: true,
         showVessel2: false,
         showVessel3: true,
-        showUI: true
+        showUI: true,
+        voyagePeriod: 'OCT 3 - OCT 5'  // 🔧 EDIT YOUR DATE HERE
     },
     8: {
         name: 'Key Findings',
@@ -201,7 +209,8 @@ const CHAPTERS = {
         showLegend: false,
         showVessel2: false,
         showVessel3: false,
-        showUI: false
+        showUI: false,
+        voyagePeriod: 'AUG 28 - OCT 5'  // 🔧 EDIT YOUR DATE HERE
     }
 };
 
@@ -1252,10 +1261,12 @@ function updateVesselPanel(chapterNum) {
             if (elements.imo) elements.imo.textContent = '9842190';
             
             if (elements.label2) elements.label2.textContent = 'VOYAGE PERIOD';
-            if (elements.value2) elements.value2.textContent = 'AUG 28 - OCT 5';
+            // 🔧 UPDATED: Now uses chapter-specific voyage period from CHAPTERS config
+            const chapter = CHAPTERS[chapterNum];
+            if (elements.value2) elements.value2.textContent = chapter && chapter.voyagePeriod ? chapter.voyagePeriod : 'AUG 28 - OCT 5';
             
             if (elements.label3) elements.label3.textContent = 'CARGO';
-            if (elements.value3) elements.value3.textContent = 'RUSSIAN CRUDE';
+            if (elements.value3) elements.value3.textContent = 'RUSSIAN CRUDE OIL';
         }
         
         panel.style.transition = 'opacity 0.4s ease';

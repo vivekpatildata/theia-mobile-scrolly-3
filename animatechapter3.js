@@ -19,7 +19,7 @@ function animateChapter3(map, geojsonData, vesselMarker, config = {}) {
             coords: [13.8009, 54.9989],
             label: 'DETECTION 1',
             image: 'image1A.png',
-            popupOffset: [140, 100],
+            popupOffset: [150, 170],
             delay: 500
         },
         {
