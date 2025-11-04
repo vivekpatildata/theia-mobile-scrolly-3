@@ -84,7 +84,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'APR 5 - AUG 31'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '05 APR - 31 AUG'  // 🔧 EDIT YOUR DATE HERE
     },
     2: {
         name: 'Baltic Exit',
@@ -102,7 +102,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'AUG 31'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '31 AUG'  // 🔧 EDIT YOUR DATE HERE
     },
     3: {
         name: 'North Sea Transit',
@@ -120,12 +120,12 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'SEP 2 - SEP 6'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '02 SEP - 06 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     4: {
         name: 'Norwegian Sea to Atlantic',
         center: [4.1689, 63.3852],
-        zoom: 9.57,
+        zoom: 8.57,
         pitch: 30,
         bearing: 10,
         duration: 3500,
@@ -138,7 +138,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'SEP 7 - SEP 8'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '07 SEP - 08 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     5: {
         name: 'Mid-Atlantic to Haiti',
@@ -156,7 +156,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'SEP 9 - SEP 25'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '09 SEP - 25 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     6: {
         name: 'Haiti Arrival - STS Transfer',
@@ -174,7 +174,7 @@ const CHAPTERS = {
         showVessel2: true,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: 'SEP 25 - OCT 2'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '25 SEP - 02 OCT'  // 🔧 EDIT YOUR DATE HERE
     },
     7: {
         name: 'Dark STS - EQUALITY',
@@ -192,7 +192,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: true,
         showUI: true,
-        voyagePeriod: 'OCT 3 - OCT 5'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '03 OCT - 05 OCT'  // 🔧 EDIT YOUR DATE HERE
     },
     8: {
         name: 'Key Findings',
@@ -210,7 +210,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: false,
-        voyagePeriod: 'AUG 28 - OCT 5'  // 🔧 EDIT YOUR DATE HERE
+        voyagePeriod: '28 AUG - 05 OCT'  // 🔧 EDIT YOUR DATE HERE
     }
 };
 
@@ -340,7 +340,6 @@ function cleanupAllChapterElements() {
     document.querySelectorAll('[style*="position: fixed"], [style*="position: absolute"]').forEach(el => {
         // Don't remove UI elements
         if (!el.closest('#vesselInfoPanel') && 
-            !el.closest('#datetimeDisplay') && 
             !el.closest('#miniMapContainer') &&
             !el.closest('.story-progress') &&
             !el.closest('.logo-container') &&
@@ -1165,7 +1164,6 @@ function animateProperty(layerId, property, targetValue, duration) {
 
 function updateUIVisibility(show) {
     const vesselPanel = safeGetElement('vesselInfoPanel');
-    const datetimeDisplay = safeGetElement('datetimeDisplay');
     const miniMapContainer = safeGetElement('miniMapContainer');
     
     const displayValue = show ? 'block' : 'none';
@@ -1175,13 +1173,6 @@ function updateUIVisibility(show) {
         vesselPanel.style.display = displayValue;
         setTimeout(() => {
             vesselPanel.style.opacity = opacity;
-        }, 10);
-    }
-    
-    if (datetimeDisplay) {
-        datetimeDisplay.style.display = displayValue;
-        setTimeout(() => {
-            datetimeDisplay.style.opacity = opacity;
         }, 10);
     }
     
@@ -1237,7 +1228,13 @@ function updateVesselPanel(chapterNum) {
             if (elements.imo) elements.imo.textContent = '9842190';
             
             if (elements.label2) elements.label2.textContent = 'VESSEL 2';
-            if (elements.value2) elements.value2.innerHTML = '<span class="vessel-indicator vessel-2-indicator"></span>LOURDES / 9259692';
+            if (elements.value2) {
+                elements.value2.innerHTML = `
+                    <span class="vessel-indicator vessel-2-indicator"></span>
+                    <span style="display: block;">LOURDES</span>
+                    <span class="info-value-small" style="display: block; margin-top: 1px;">9259692</span>
+                `;
+            }
             
             if (elements.label3) elements.label3.textContent = 'OPERATION';
             if (elements.value3) elements.value3.textContent = 'STS TRANSFER';
@@ -1249,10 +1246,16 @@ function updateVesselPanel(chapterNum) {
             if (elements.imo) elements.imo.textContent = '9842190';
             
             if (elements.label2) elements.label2.textContent = 'VESSEL 3';
-            if (elements.value2) elements.value2.innerHTML = '<span class="vessel-indicator vessel-3-indicator"></span>EQUALITY / 9216547';
+            if (elements.value2) {
+                elements.value2.innerHTML = `
+                    <span class="vessel-indicator vessel-3-indicator"></span>
+                    <span style="display: block;">EQUALITY</span>
+                    <span class="info-value-small" style="display: block; margin-top: 1px;">9216547</span>
+                `;
+            }
             
-            if (elements.label3) elements.label3.textContent = 'STATUS';
-            if (elements.value3) elements.value3.textContent = 'DARK STS';
+            // if (elements.label3) elements.label3.textContent = 'STATUS';
+            // if (elements.value3) elements.value3.textContent = 'DARK STS';
         } else {
             panel.classList.remove('dual-vessel');
             
@@ -1325,38 +1328,6 @@ function updateLegend(chapterNum) {
             legendBar.style.display = 'none';
         }, 400);
     }
-}
-
-function updateDateTime(index) {
-    const data = TIMELINE_DATA[index];
-    if (!data) return;
-    
-    const dateEl = safeGetElement('currentDate');
-    const timeEl = safeGetElement('currentTime');
-    const elapsedEl = safeGetElement('elapsedTime');
-    
-    if (!dateEl || !timeEl || !elapsedEl) return;
-    
-    const elements = [dateEl, timeEl, elapsedEl];
-    
-    elements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(-5px)';
-        el.style.transition = 'all 0.3s ease';
-    });
-    
-    setTimeout(() => {
-        dateEl.textContent = data.date;
-        timeEl.textContent = data.time;
-        elapsedEl.textContent = data.elapsed;
-        
-        elements.forEach((el, i) => {
-            setTimeout(() => {
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }, i * 80);
-        });
-    }, 300);
 }
 
 function updateProgressBar(chapterNum) {
@@ -1598,7 +1569,6 @@ function flyToChapter(chapterNum) {
     
     // Update UI elements
     updateProgressBar(chapterNum);
-    updateDateTime(chapterNum);
     updateVesselPanel(chapterNum);
     updateLegend(chapterNum);
     
@@ -1825,14 +1795,6 @@ function initializeMap() {
                 visualizePitch: true
             }),
             'top-right'
-        );
-        
-        STATE.map.addControl(
-            new mapboxgl.ScaleControl({
-                maxWidth: 100,
-                unit: 'nautical'
-            }),
-            'bottom-left'
         );
         
         // Create vessel markers
