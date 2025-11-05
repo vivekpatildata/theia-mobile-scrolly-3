@@ -29,7 +29,7 @@ function animateChapter4(map, geojsonData, vesselMarker, config = {}) {
         {
             coords: [4.2588, 63.4259],
             label: 'LIGHT DETECTION',
-            image: 'imageintro.png',
+            image: 'image4.png',
             popupOffset: [200, 120],  // To the right of marker
             delay: 500
         }
@@ -179,7 +179,7 @@ function animateChapter4(map, geojsonData, vesselMarker, config = {}) {
             .chapter4-popup .enhanced-popup .annotation-img {
                 width: 160px !important;      /* Same as Chapters 1, 2 & 3 */
                 height: 145px !important;     /* Same as Chapters 1, 2 & 3 */
-                object-fit: cover !important;
+                object-fit: fit !important;
                 display: block;
                 border-radius: 4px;
             }
@@ -262,7 +262,7 @@ function animateChapter4(map, geojsonData, vesselMarker, config = {}) {
             @media screen and (min-width: 1025px) {
                 .chapter4-popup .enhanced-popup .annotation-img {
                     width: 210px !important;
-                    height: 191px !important;
+                    height: 210px !important;
                 }
             }
         `;

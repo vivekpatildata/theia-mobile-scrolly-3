@@ -28,7 +28,7 @@ function animateChapter2(map, geojsonData, vesselMarker, config = {}) {
         {
             coords: [28.4263, 59.7067],
             label: 'LIGHT DETECTION',
-            image: 'imageintro.png',
+            image: 'imageintro2.png',
             popupOffset: [200, 50],  // To the right of marker
             delay: 500
         }
@@ -176,9 +176,9 @@ function animateChapter2(map, geojsonData, vesselMarker, config = {}) {
             
             /* MOBILE BASE (DEFAULT) - Optimized for phones */
             .chapter2-popup .enhanced-popup .annotation-img {
-                width: 160px !important;      /* Same as Chapter 1 & 3 */
-                height: 145px !important;     /* Same as Chapter 1 & 3 */
-                object-fit: cover !important;
+                width: 190px !important;      /* Same as Chapter 1 & 3 */
+                height: 190px !important;     /* Same as Chapter 1 & 3 */
+                object-fit: fit !important;
                 display: block;
                 border-radius: 4px;
             }
@@ -193,7 +193,7 @@ function animateChapter2(map, geojsonData, vesselMarker, config = {}) {
                ============================================ */
             @media screen and (max-width: 480px) {
                 .chapter2-popup .enhanced-popup .annotation-img {
-                    width: 140px !important;
+                    width: 150px !important;
                     height: 127px !important;
                 }
                 
@@ -244,14 +244,14 @@ function animateChapter2(map, geojsonData, vesselMarker, config = {}) {
             @media screen and (min-width: 481px) and (max-width: 768px) {
                 .chapter2-popup .enhanced-popup .annotation-img {
                     width: 170px !important;
-                    height: 155px !important;
+                    height: 170px !important;
                 }
             }
             
             @media screen and (min-width: 769px) and (max-width: 1024px) {
                 .chapter2-popup .enhanced-popup .annotation-img {
                     width: 190px !important;
-                    height: 173px !important;
+                    height: 193px !important;
                 }
             }
             
@@ -261,7 +261,7 @@ function animateChapter2(map, geojsonData, vesselMarker, config = {}) {
             @media screen and (min-width: 1025px) {
                 .chapter2-popup .enhanced-popup .annotation-img {
                     width: 210px !important;
-                    height: 191px !important;
+                    height: 210px !important;
                 }
             }
         `;
