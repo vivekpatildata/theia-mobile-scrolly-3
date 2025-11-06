@@ -66,6 +66,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: false,
+        showMiniMap: false,  // 🔧 Mini map control
         voyagePeriod: 'APR 5 - AUG 31'  // 🔧 EDIT YOUR DATE HERE
     },
     1: {
@@ -84,7 +85,9 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: '05 APR - 31 AUG'  // 🔧 EDIT YOUR DATE HERE
+        showMiniMap: true,  // 🔧 Mini map control
+        periodLabel: 'ANCHORAGE PERIOD',  // 🔧 CUSTOM LABEL
+        voyagePeriod: '30 MAR - 31 AUG'  // 🔧 EDIT YOUR DATE HERE
     },
     2: {
         name: 'Baltic Exit',
@@ -102,7 +105,9 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
-        voyagePeriod: '31 AUG'  // 🔧 EDIT YOUR DATE HERE
+        showMiniMap: true,  // 🔧 Mini map control
+        periodLabel: 'DOCKING PERIOD',  // 🔧 CUSTOM LABEL
+        voyagePeriod: '31 AUG - 02 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     3: {
         name: 'North Sea Transit',
@@ -120,6 +125,8 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
+        showMiniMap: true,  // 🔧 Mini map control
+        periodLabel: 'TRANSIT PERIOD',  // 🔧 CUSTOM LABEL
         voyagePeriod: '02 SEP - 06 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     4: {
@@ -138,6 +145,8 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
+        showMiniMap: true,  // 🔧 Mini map control
+        periodLabel: 'LOITERING PERIOD',  // 🔧 CUSTOM LABEL
         voyagePeriod: '07 SEP - 08 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     5: {
@@ -156,6 +165,8 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: true,
+        showMiniMap: false,  // 🔧 HIDDEN - Atlantic crossing doesn't need mini map context
+        periodLabel: 'TRANSIT PERIOD',  // 🔧 CUSTOM LABEL
         voyagePeriod: '09 SEP - 25 SEP'  // 🔧 EDIT YOUR DATE HERE
     },
     6: {
@@ -174,6 +185,7 @@ const CHAPTERS = {
         showVessel2: true,
         showVessel3: false,
         showUI: true,
+        showMiniMap: true,  // 🔧 Mini map control
         voyagePeriod: '25 SEP - 02 OCT'  // 🔧 EDIT YOUR DATE HERE
     },
     7: {
@@ -192,6 +204,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: true,
         showUI: true,
+        showMiniMap: true,  // 🔧 Mini map control
         voyagePeriod: '03 OCT - 05 OCT'  // 🔧 EDIT YOUR DATE HERE
     },
     8: {
@@ -210,6 +223,7 @@ const CHAPTERS = {
         showVessel2: false,
         showVessel3: false,
         showUI: false,
+        showMiniMap: false,  // 🔧 Mini map control
         voyagePeriod: '28 AUG - 05 OCT'  // 🔧 EDIT YOUR DATE HERE
     }
 };
@@ -1162,21 +1176,27 @@ function animateProperty(layerId, property, targetValue, duration) {
 // UI UPDATE FUNCTIONS
 // ============================================================================
 
-function updateUIVisibility(show) {
+function updateVesselPanelVisibility(show) {
     const vesselPanel = safeGetElement('vesselInfoPanel');
-    const miniMapContainer = safeGetElement('miniMapContainer');
-    
-    const displayValue = show ? 'block' : 'none';
-    const opacity = show ? '1' : '0';
     
     if (vesselPanel) {
+        const displayValue = show ? 'block' : 'none';
+        const opacity = show ? '1' : '0';
+        
         vesselPanel.style.display = displayValue;
         setTimeout(() => {
             vesselPanel.style.opacity = opacity;
         }, 10);
     }
+}
+
+function updateMiniMapVisibility(show) {
+    const miniMapContainer = safeGetElement('miniMapContainer');
     
     if (miniMapContainer) {
+        const displayValue = show ? 'block' : 'none';
+        const opacity = show ? '1' : '0';
+        
         miniMapContainer.style.display = displayValue;
         
         // When showing mini map, resize and refresh position
@@ -1201,6 +1221,13 @@ function updateUIVisibility(show) {
             miniMapContainer.style.opacity = opacity;
         }, 10);
     }
+}
+
+function updateUIVisibility(show) {
+    // Legacy function - kept for backward compatibility
+    // Now calls separate functions for vessel panel and mini map
+    updateVesselPanelVisibility(show);
+    updateMiniMapVisibility(show);
 }
 
 function updateVesselPanel(chapterNum) {
@@ -1263,9 +1290,9 @@ function updateVesselPanel(chapterNum) {
             if (elements.name) elements.name.textContent = 'AKADEMIK GUBKIN';
             if (elements.imo) elements.imo.textContent = '9842190';
             
-            if (elements.label2) elements.label2.textContent = 'VOYAGE PERIOD';
-            // 🔧 UPDATED: Now uses chapter-specific voyage period from CHAPTERS config
+            // 🔧 UPDATED: Now uses chapter-specific period label and voyage period from CHAPTERS config
             const chapter = CHAPTERS[chapterNum];
+            if (elements.label2) elements.label2.textContent = chapter && chapter.periodLabel ? chapter.periodLabel : 'VOYAGE PERIOD';
             if (elements.value2) elements.value2.textContent = chapter && chapter.voyagePeriod ? chapter.voyagePeriod : 'AUG 28 - OCT 5';
             
             if (elements.label3) elements.label3.textContent = 'CARGO';
@@ -1557,11 +1584,13 @@ function flyToChapter(chapterNum) {
     // Stop all animations
     stopAllAnimations();
     
-    // Update UI visibility
-    updateUIVisibility(chapter.showUI);
+    // Update UI visibility - now with separate control for mini map
+    updateVesselPanelVisibility(chapter.showUI);
+    updateMiniMapVisibility(chapter.showMiniMap !== undefined ? chapter.showMiniMap : chapter.showUI);
     
     // CRITICAL: Ensure mini map is resized when becoming visible
-    if (chapter.showUI && STATE.miniMap) {
+    const shouldShowMiniMap = chapter.showMiniMap !== undefined ? chapter.showMiniMap : chapter.showUI;
+    if (shouldShowMiniMap && STATE.miniMap) {
         requestAnimationFrame(() => {
             STATE.miniMap.resize();
         });

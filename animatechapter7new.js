@@ -239,9 +239,14 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
             .chapter7-popup .enhanced-popup .annotation-img {
                 width: 160px !important;
                 height: 160px !important;
-                object-fit: cover !important;
+                object-fit: contain !important;  /* 🔧 FIX: Changed from cover to contain */
                 display: block;
                 border-radius: 4px;
+                image-rendering: -webkit-optimize-contrast;  /* 🔧 FIX: Better quality on webkit */
+                image-rendering: crisp-edges;  /* 🔧 FIX: Sharp edges */
+                backface-visibility: hidden;  /* 🔧 FIX: Prevent rendering issues */
+                transform: translateZ(0);  /* 🔧 FIX: Hardware acceleration */
+                -webkit-backface-visibility: hidden;  /* 🔧 FIX: Safari support */
             }
             
             .chapter7-popup .enhanced-popup {
@@ -252,6 +257,12 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
                 .chapter7-popup .enhanced-popup .annotation-img {
                     width: 145px !important;
                     height: 152px !important;
+                    /* 🔧 FIX: Maintain quality on tablet */
+                    object-fit: contain !important;
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
+                    backface-visibility: hidden;
+                    transform: translateZ(0);
                 }
                 .chapter7-detection-marker { width: 36px; height: 36px; }
                 .sts-dark-zone { width: 100px; height: 100px; }
@@ -264,6 +275,12 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
                 .chapter7-popup .enhanced-popup .annotation-img {
                     width: 130px !important;
                     height: 118px !important;
+                    /* 🔧 FIX: Maintain quality on mobile */
+                    object-fit: contain !important;
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
+                    backface-visibility: hidden;
+                    transform: translateZ(0);
                 }
                 .chapter7-detection-marker { width: 32px; height: 32px; }
                 .sts-dark-zone { width: 80px; height: 80px; }
@@ -274,6 +291,12 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
                 .chapter7-popup .enhanced-popup .annotation-img {
                     width: 180px !important;
                     height: 180px !important;
+                    /* 🔧 FIX: Maintain quality on desktop */
+                    object-fit: contain !important;
+                    image-rendering: -webkit-optimize-contrast;
+                    image-rendering: crisp-edges;
+                    backface-visibility: hidden;
+                    transform: translateZ(0);
                 }
             }
         `;
