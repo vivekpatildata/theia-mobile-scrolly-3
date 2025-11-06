@@ -237,9 +237,9 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
             }
             
             .chapter7-popup .enhanced-popup .annotation-img {
-                width: 160px !important;
+                width: 140px !important;
                 height: 160px !important;
-                object-fit: contain !important;  /* 🔧 FIX: Changed from cover to contain */
+                object-fit: fit !important;  /* 🔧 FIX: Changed from cover to contain */
                 display: block;
                 border-radius: 4px;
                 image-rendering: -webkit-optimize-contrast;  /* 🔧 FIX: Better quality on webkit */
@@ -255,7 +255,7 @@ function animateChapter7New(map, akademikData, equalityData, vesselMarker, vesse
             
             @media screen and (max-width: 768px) {
                 .chapter7-popup .enhanced-popup .annotation-img {
-                    width: 145px !important;
+                    width: 140px !important;
                     height: 152px !important;
                     /* 🔧 FIX: Maintain quality on tablet */
                     object-fit: contain !important;

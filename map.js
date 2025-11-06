@@ -190,8 +190,8 @@ const CHAPTERS = {
     },
     7: {
         name: 'Dark STS - EQUALITY',
-        center: [-75.4, 20.589],
-        zoom: 7.95,
+        center: [-75.5467, 20.7875],
+        zoom: 8.95,
         pitch: 1,
         bearing: 0,
         duration: 3500,
@@ -1257,8 +1257,7 @@ function updateVesselPanel(chapterNum) {
             if (elements.label2) elements.label2.textContent = 'VESSEL 2';
             if (elements.value2) {
                 elements.value2.innerHTML = `
-                    <span class="vessel-indicator vessel-2-indicator"></span>
-                    <span style="display: block;">LOURDES</span>
+                    <span class="vessel-indicator vessel-2-indicator"></span>LOURDES
                     <span class="info-value-small" style="display: block; margin-top: 1px;">9259692</span>
                 `;
             }
@@ -1275,8 +1274,7 @@ function updateVesselPanel(chapterNum) {
             if (elements.label2) elements.label2.textContent = 'VESSEL 3';
             if (elements.value2) {
                 elements.value2.innerHTML = `
-                    <span class="vessel-indicator vessel-3-indicator"></span>
-                    <span style="display: block;">EQUALITY</span>
+                    <span class="vessel-indicator vessel-3-indicator"></span>EQUALITY
                     <span class="info-value-small" style="display: block; margin-top: 1px;">9216547</span>
                 `;
             }
